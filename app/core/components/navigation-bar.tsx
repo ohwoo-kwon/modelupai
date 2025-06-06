@@ -11,6 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import { Separator } from "./ui/separator";
 import {
   Sheet,
   SheetClose,
@@ -70,14 +71,14 @@ function MenuButtons() {
     <>
       <SheetClose asChild>
         <Link
-          to="/"
+          to="/models"
           viewTransition
           className="hover:text-muted-foreground transition-colors"
         >
-          Link 1
+          모델
         </Link>
       </SheetClose>
-      <SheetClose asChild>
+      {/* <SheetClose asChild>
         <Link
           to="/"
           viewTransition
@@ -94,7 +95,7 @@ function MenuButtons() {
         >
           Link 3
         </Link>
-      </SheetClose>
+      </SheetClose> */}
     </>
   );
 }
@@ -134,6 +135,7 @@ export default function NavigationBar({
       <div className="hidden items-center gap-5 text-sm md:flex">
         <Sheet>
           <MenuButtons />
+          <Separator orientation="vertical" className="h-8!" />
           {loading ? (
             <div className="flex items-center">
               <div className="bg-muted-foreground/50 size-8 animate-pulse rounded-full" />

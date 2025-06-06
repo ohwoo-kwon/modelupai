@@ -9,6 +9,72 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      models: {
+        Row: {
+          age_range: Database["public"]["Enums"]["age_range"]
+          body_type: Database["public"]["Enums"]["body_type"]
+          created_at: string
+          description: string | null
+          gender: Database["public"]["Enums"]["gender"]
+          image_url: string
+          is_public: boolean
+          model_id: number
+          name: string
+          profile_id: string | null
+          race: Database["public"]["Enums"]["race"]
+          reference_model_id: number | null
+          style: Database["public"]["Enums"]["style"]
+          updated_at: string
+        }
+        Insert: {
+          age_range?: Database["public"]["Enums"]["age_range"]
+          body_type?: Database["public"]["Enums"]["body_type"]
+          created_at?: string
+          description?: string | null
+          gender?: Database["public"]["Enums"]["gender"]
+          image_url: string
+          is_public?: boolean
+          model_id?: never
+          name: string
+          profile_id?: string | null
+          race?: Database["public"]["Enums"]["race"]
+          reference_model_id?: number | null
+          style?: Database["public"]["Enums"]["style"]
+          updated_at?: string
+        }
+        Update: {
+          age_range?: Database["public"]["Enums"]["age_range"]
+          body_type?: Database["public"]["Enums"]["body_type"]
+          created_at?: string
+          description?: string | null
+          gender?: Database["public"]["Enums"]["gender"]
+          image_url?: string
+          is_public?: boolean
+          model_id?: never
+          name?: string
+          profile_id?: string | null
+          race?: Database["public"]["Enums"]["race"]
+          reference_model_id?: number | null
+          style?: Database["public"]["Enums"]["style"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "models_profile_id_profiles_profile_id_fk"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "models_reference_model_id_models_model_id_fk"
+            columns: ["reference_model_id"]
+            isOneToOne: false
+            referencedRelation: "models"
+            referencedColumns: ["model_id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -41,7 +107,51 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      age_range:
+        | "1-5"
+        | "6-10"
+        | "11-15"
+        | "16-20"
+        | "21-25"
+        | "26-30"
+        | "31-35"
+        | "36-40"
+        | "41-45"
+        | "46-50"
+        | "51-55"
+        | "56-60"
+        | "61-"
+      body_type:
+        | "slim"
+        | "average"
+        | "athletic"
+        | "curvy"
+        | "plus"
+        | "muscular"
+        | "petite"
+        | "tall"
+      gender: "male" | "female" | "other"
+      race:
+        | "asian"
+        | "black"
+        | "white"
+        | "latino"
+        | "middle-eastern"
+        | "indian"
+        | "other"
+      style:
+        | "cute"
+        | "sexy"
+        | "casual"
+        | "formal"
+        | "street"
+        | "sporty"
+        | "elegant"
+        | "vintage"
+        | "punk"
+        | "minimal"
+        | "modern"
+        | "goth"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -156,6 +266,56 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      age_range: [
+        "1-5",
+        "6-10",
+        "11-15",
+        "16-20",
+        "21-25",
+        "26-30",
+        "31-35",
+        "36-40",
+        "41-45",
+        "46-50",
+        "51-55",
+        "56-60",
+        "61-",
+      ],
+      body_type: [
+        "slim",
+        "average",
+        "athletic",
+        "curvy",
+        "plus",
+        "muscular",
+        "petite",
+        "tall",
+      ],
+      gender: ["male", "female", "other"],
+      race: [
+        "asian",
+        "black",
+        "white",
+        "latino",
+        "middle-eastern",
+        "indian",
+        "other",
+      ],
+      style: [
+        "cute",
+        "sexy",
+        "casual",
+        "formal",
+        "street",
+        "sporty",
+        "elegant",
+        "vintage",
+        "punk",
+        "minimal",
+        "modern",
+        "goth",
+      ],
+    },
   },
 } as const
