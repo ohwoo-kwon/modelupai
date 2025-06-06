@@ -102,9 +102,7 @@ export default function Login({
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle>로그인</CardTitle>
-          <CardDescription>
-            Starting Project 에 오신 것을 환영합니다.
-          </CardDescription>
+          <CardDescription>Model Up AI에 오신 것을 환영합니다.</CardDescription>
         </CardHeader>
         <CardContent>
           <Form className="flex flex-col gap-4" method="POST" ref={formRef}>
@@ -114,7 +112,7 @@ export default function Login({
                 id="email"
                 name="email"
                 type="email"
-                placeholder="honggilldong@startingproject.com"
+                placeholder="honggilldong@modelupai.com"
                 required
               />
               {actionData &&
