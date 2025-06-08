@@ -12,8 +12,16 @@ export default [
     route("/error", "core/screens/error.tsx"),
     ...prefix("/models", [
       index("features/models/screens/models.tsx"),
+      route("/:modelId", "features/models/screens/model.tsx"),
       layout("core/layouts/private.layout.tsx", { id: "private-model" }, [
         route("/create", "features/models/screens/model-create.tsx"),
+      ]),
+    ]),
+    ...prefix("/clothes", [
+      index("features/clothes/screens/clothes.tsx"),
+      route("/:clothId", "features/clothes/screens/cloth.tsx"),
+      layout("core/layouts/private.layout.tsx", { id: "private-cloth" }, [
+        route("/create", "features/clothes/screens/cloth-create.tsx"),
       ]),
     ]),
     layout("core/layouts/public.layout.tsx", [

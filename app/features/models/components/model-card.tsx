@@ -1,4 +1,4 @@
-import { DotIcon, ShirtIcon } from "lucide-react";
+import { DotIcon } from "lucide-react";
 import { Link } from "react-router";
 
 import { bodyTypeObject, raceObject, styleObject } from "../\bconstants";
@@ -21,10 +21,11 @@ export default function ModelCard({
   style: string;
 }) {
   return (
-    <div className="flex h-fit flex-col rounded border transition-transform duration-300 hover:scale-105">
-      <Link to={`/models/create?${modelId}`}>
-        <img className="w-full object-cover" src={imgUrl} alt={name} />
-      </Link>
+    <Link
+      to={`/models/${modelId}`}
+      className="flex h-fit flex-col rounded border transition-transform duration-300 hover:scale-105"
+    >
+      <img className="w-full object-cover" src={imgUrl} alt={name} />
       <div className="flex items-center justify-between px-4 py-2">
         <div className="flex flex-col">
           <h3 className="text-lg font-bold">{name}</h3>
@@ -42,6 +43,6 @@ export default function ModelCard({
           </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

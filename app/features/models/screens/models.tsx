@@ -1,6 +1,5 @@
 import type { Route } from "./+types/models";
 
-import { DotIcon } from "lucide-react";
 import { Link } from "react-router";
 
 import { Button } from "~/core/components/ui/button";
@@ -18,18 +17,15 @@ export default function Models() {
       <div className="flex flex-col items-center gap-2">
         <h1 className="text-xl font-bold md:text-2xl">Model Up AI 의 모델</h1>
         <h3 className="text-center md:text-lg">
-          Model Up AI 를 통해 신규 모델을 만들거나 기존 모델에 다른 옷, 배경
-          혹은 포즈를 바꿔볼 수 있습니다.
+          Model Up AI 에서는 신규 모델을 생성하거나 기존 모델을 기반으로 변형도
+          가능해요.
         </h3>
-        <Button asChild>
-          <Link to="/models/create">나만의 모델 생성 &rarr;</Link>
-        </Button>
       </div>
       <div className="flex flex-col items-center gap-2 md:flex-row md:justify-between">
         <div>
           <Input name="name" placeholder="모델명" />
         </div>
-        <Button variant="outline" asChild>
+        <Button className="w-full md:w-fit" asChild>
           <Link to="/models/create">모델 생성</Link>
         </Button>
       </div>
