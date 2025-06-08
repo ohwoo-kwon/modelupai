@@ -3,15 +3,24 @@ import type { Route } from "./+types/clothes";
 import { Link } from "react-router";
 
 import { Button } from "~/core/components/ui/button";
-import { Input } from "~/core/components/ui/input";
+import makeServerClient from "~/core/lib/supa-client.server";
 
 import ClothCard from "../components/cloth-card";
+import { getClothes } from "../queries";
 
 export const meta: Route.MetaFunction = () => {
   return [{ title: `옷 | ${import.meta.env.VITE_APP_NAME}` }];
 };
 
-export default function Clothes() {
+export const loader = async ({ request }: Route.LoaderArgs) => {
+  const [client] = makeServerClient(request);
+
+  const clothes = await getClothes(client);
+
+  return { clothes };
+};
+
+export default function Clothes({ loaderData }: Route.ComponentProps) {
   return (
     <div className="space-y-10 px-5">
       <div className="flex flex-col items-center gap-2">
@@ -19,27 +28,25 @@ export default function Clothes() {
           Model Up AI 의 온라인 피팅
         </h1>
         <h3 className="text-center md:text-lg">
-          Model Up AI 를 통해 원하는 옷을 피팅해볼ㄴ 수 있어요.
+          Model Up AI 를 통해 원하는 옷을 피팅해볼 수 있어요.
         </h3>
         <h5>원하는 옷이 없다면 옷을 추가해보세요.</h5>
       </div>
       <div className="flex justify-end">
         <Button className="w-full md:w-fit" asChild>
-          <Link to="/models/create">피팅하고 싶은 옷 추가</Link>
+          <Link to="/clothes/create">피팅하고 싶은 옷 추가</Link>
         </Button>
       </div>
       <div className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-4">
-        {Array.from({ length: 10 })
-          .fill(0)
-          .map((_, i) => (
-            <ClothCard
-              key={`cloth_${i}`}
-              clothId={i}
-              imgUrl="https://thumbnail6.coupangcdn.com/thumbnails/remote/492x492ex/image/retail/images/2024/02/19/18/8/a445d59a-62c3-4e1d-bc2f-6db5c8f324c1.jpg"
-              name="꽃다발을 든 여자"
-              category="top"
-            />
-          ))}
+        {loaderData.clothes.map(({ cloth_id, name, category, image_url }) => (
+          <ClothCard
+            key={`cloth_${cloth_id}`}
+            clothId={cloth_id}
+            imgUrl={image_url}
+            name={name}
+            category={category}
+          />
+        ))}
       </div>
     </div>
   );

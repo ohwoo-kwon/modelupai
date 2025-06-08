@@ -79,14 +79,14 @@ export default function ModelCreate({ actionData }: Route.ComponentProps) {
         <h1 className="text-xl font-bold md:text-2xl">모델 생성</h1>
         <h3 className="md:text-lg">원하는 스타일의 모델을 만들어보세요.</h3>
       </div>
-      <Card className="mx-auto max-w-md px-8">
+      <Card className="mx-auto max-w-screen-md px-8">
         <Form className="w-full space-y-16" method="POST">
           {/* <div className="hidden space-y-1">
             <Label htmlFor="referenceModelId">참고 모델ID</Label>
             <Input id="referenceModelId" name="referenceModelId" />
           </div> */}
           <div className="space-y-4">
-            <div className="space-y-1">
+            <div className="space-y-2">
               <Label htmlFor="name">모델명</Label>
               <Input id="name" name="name" />
               {actionData &&
@@ -95,7 +95,7 @@ export default function ModelCreate({ actionData }: Route.ComponentProps) {
                 <FormErrors errors={actionData.fieldErrors.name} />
               ) : null}
             </div>
-            <div className="space-y-1">
+            <div className="space-y-2">
               <Label htmlFor="description">설명(선택)</Label>
               <Textarea
                 className="h-28 resize-none"
@@ -108,7 +108,7 @@ export default function ModelCreate({ actionData }: Route.ComponentProps) {
                 <FormErrors errors={actionData.fieldErrors.description} />
               ) : null}
             </div>
-            <div className="space-y-1">
+            <div className="space-y-2">
               <Label htmlFor="gender">성별</Label>
               <Select name="gender" defaultValue={genderEnum.enumValues[1]}>
                 <SelectTrigger id="gender" className="w-full">
@@ -128,7 +128,7 @@ export default function ModelCreate({ actionData }: Route.ComponentProps) {
                 <FormErrors errors={actionData.fieldErrors.gender} />
               ) : null}
             </div>
-            <div className="space-y-1">
+            <div className="space-y-2">
               <Label htmlFor="ageRange">나이</Label>
               <Select name="ageRange" defaultValue={ageRangeEnum.enumValues[4]}>
                 <SelectTrigger id="ageRange" className="w-full">
@@ -148,7 +148,7 @@ export default function ModelCreate({ actionData }: Route.ComponentProps) {
                 <FormErrors errors={actionData.fieldErrors.ageRange} />
               ) : null}
             </div>
-            <div className="space-y-1">
+            <div className="space-y-2">
               <Label htmlFor="bodyType">체형</Label>
               <Select name="bodyType" defaultValue={bodyTypeEnum.enumValues[1]}>
                 <SelectTrigger id="bodyType" className="w-full">
@@ -168,7 +168,7 @@ export default function ModelCreate({ actionData }: Route.ComponentProps) {
                 <FormErrors errors={actionData.fieldErrors.bodyType} />
               ) : null}
             </div>
-            <div className="space-y-1">
+            <div className="space-y-2">
               <Label htmlFor="race">인종</Label>
               <Select name="race" defaultValue={raceEnum.enumValues[0]}>
                 <SelectTrigger id="race" className="w-full">
@@ -188,7 +188,7 @@ export default function ModelCreate({ actionData }: Route.ComponentProps) {
                 <FormErrors errors={actionData.fieldErrors.race} />
               ) : null}
             </div>
-            <div className="space-y-1">
+            <div className="space-y-2">
               <Label htmlFor="style">스타일</Label>
               <Select name="style" defaultValue={styleEnum.enumValues[0]}>
                 <SelectTrigger id="style" className="w-full">
@@ -208,7 +208,7 @@ export default function ModelCreate({ actionData }: Route.ComponentProps) {
                 <FormErrors errors={actionData.fieldErrors.style} />
               ) : null}
             </div>
-            <div className="space-y-1">
+            <div className="space-y-2">
               <Label htmlFor="prompt">추가 정보(선택)</Label>
               <Textarea
                 className="h-28 resize-none"
