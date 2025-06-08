@@ -71,6 +71,15 @@ function MenuButtons() {
     <>
       <SheetClose asChild>
         <Link
+          to="/clothes"
+          viewTransition
+          className="hover:text-muted-foreground transition-colors"
+        >
+          옷
+        </Link>
+      </SheetClose>
+      <SheetClose asChild>
+        <Link
           to="/models"
           viewTransition
           className="hover:text-muted-foreground transition-colors"

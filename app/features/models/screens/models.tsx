@@ -6,6 +6,8 @@ import { Link } from "react-router";
 import { Button } from "~/core/components/ui/button";
 import { Input } from "~/core/components/ui/input";
 
+import ModelCard from "../components/model-card";
+
 export const meta: Route.MetaFunction = () => {
   return [{ title: `모델 | ${import.meta.env.VITE_APP_NAME}` }];
 };
@@ -32,114 +34,20 @@ export default function Models() {
         </Button>
       </div>
       <div className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-4">
-        <div className="flex h-fit flex-col rounded border">
-          <img
-            className="w-full object-cover"
-            src="https://cdn.pixabay.com/photo/2022/03/24/15/46/woman-7089304_1280.jpg"
-          />
-          <div className="flex flex-col px-4 py-2">
-            <h3 className="text-lg font-bold">꽃다발 든 여자</h3>
-            <div className="text-muted-foreground flex items-center text-sm">
-              <span>21-25</span>
-              <DotIcon size={14} />
-              <span>평범</span>
-              <DotIcon size={14} />
-              <span>아시아인</span>
-              <DotIcon size={14} />
-              <span>큐트</span>
-            </div>
-          </div>
-        </div>
-        <div className="flex h-fit flex-col rounded border">
-          <img
-            className="w-full object-cover"
-            src="https://cdn.pixabay.com/photo/2024/03/20/12/36/tokyo-skytree-8645455_1280.jpg"
-          />
-          <div className="flex flex-col px-4 py-2">
-            <h3 className="text-lg font-bold">꽃다발 든 여자</h3>
-            <div className="text-muted-foreground flex items-center text-sm">
-              <span>21-25</span>
-              <DotIcon size={14} />
-              <span>평범</span>
-              <DotIcon size={14} />
-              <span>아시아인</span>
-              <DotIcon size={14} />
-              <span>큐트</span>
-            </div>
-          </div>
-        </div>
-        <div className="flex h-fit flex-col rounded border">
-          <img
-            className="w-full object-cover"
-            src="https://cdn.pixabay.com/photo/2023/09/21/14/17/italy-8266783_1280.jpg"
-          />
-          <div className="flex flex-col px-4 py-2">
-            <h3 className="text-lg font-bold">꽃다발 든 여자</h3>
-            <div className="text-muted-foreground flex items-center text-sm">
-              <span>21-25</span>
-              <DotIcon size={14} />
-              <span>평범</span>
-              <DotIcon size={14} />
-              <span>아시아인</span>
-              <DotIcon size={14} />
-              <span>큐트</span>
-            </div>
-          </div>
-        </div>
-        <div className="flex h-fit flex-col rounded border">
-          <img
-            className="w-full object-cover"
-            src="https://cdn.pixabay.com/photo/2022/01/22/13/14/baby-6957222_1280.jpg"
-          />
-          <div className="flex flex-col px-4 py-2">
-            <h3 className="text-lg font-bold">꽃다발 든 여자</h3>
-            <div className="text-muted-foreground flex items-center text-sm">
-              <span>21-25</span>
-              <DotIcon size={14} />
-              <span>평범</span>
-              <DotIcon size={14} />
-              <span>아시아인</span>
-              <DotIcon size={14} />
-              <span>큐트</span>
-            </div>
-          </div>
-        </div>
-        <div className="flex h-fit flex-col rounded border">
-          <img
-            className="w-full object-cover"
-            src="https://cdn.pixabay.com/photo/2025/05/23/08/54/girl-9617241_1280.png"
-          />
-          <div className="flex flex-col px-4 py-2">
-            <h3 className="text-lg font-bold">꽃다발 든 여자</h3>
-            <div className="text-muted-foreground flex items-center text-sm">
-              <span>21-25</span>
-              <DotIcon size={14} />
-              <span>평범</span>
-              <DotIcon size={14} />
-              <span>아시아인</span>
-              <DotIcon size={14} />
-              <span>큐트</span>
-            </div>
-          </div>
-        </div>
-        <div className="flex h-fit flex-col rounded border">
-          <img
-            className="w-full object-cover"
-            src="https://cdn.pixabay.com/photo/2025/03/12/09/59/fashion-9464875_1280.jpg"
-          />
-          <div className="flex flex-col px-4 py-2">
-            <h3 className="text-lg font-bold">꽃다발 든 여자</h3>
-            <div className="text-muted-foreground flex items-center text-sm">
-              <span>21-25</span>
-              <DotIcon size={14} />
-              <span>평범</span>
-              <DotIcon size={14} />
-              <span>아시아인</span>
-              <DotIcon size={14} />
-              <span>큐트</span>
-            </div>
-          </div>
-        </div>
+        {Array.from({ length: 10 })
+          .fill(0)
+          .map((_, i) => (
+            <ModelCard
+              key={`model_${i}`}
+              modelId={i}
+              imgUrl="https://cdn.pixabay.com/photo/2022/03/24/15/46/woman-7089304_1280.jpg"
+              name="꽃다발을 든 여자"
+              ageRange="21-25"
+              bodyType="average"
+              race="asian"
+              style="cute"
+            />
+          ))}
       </div>
     </div>
   );
