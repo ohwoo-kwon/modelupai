@@ -9,6 +9,47 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      clothes: {
+        Row: {
+          category: Database["public"]["Enums"]["clothingCategoryEnum"]
+          cloth_id: number
+          created_at: string
+          image_url: string
+          name: string
+          profile_id: string | null
+          shopping_url: string
+          updated_at: string
+        }
+        Insert: {
+          category: Database["public"]["Enums"]["clothingCategoryEnum"]
+          cloth_id?: never
+          created_at?: string
+          image_url: string
+          name: string
+          profile_id?: string | null
+          shopping_url: string
+          updated_at?: string
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["clothingCategoryEnum"]
+          cloth_id?: never
+          created_at?: string
+          image_url?: string
+          name?: string
+          profile_id?: string | null
+          shopping_url?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clothes_profile_id_profiles_profile_id_fk"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
       models: {
         Row: {
           age_range: Database["public"]["Enums"]["age_range"]
@@ -130,6 +171,13 @@ export type Database = {
         | "muscular"
         | "petite"
         | "tall"
+      clothingCategoryEnum:
+        | "top"
+        | "bottom"
+        | "one-piece"
+        | "outer"
+        | "shoes"
+        | "accessory"
       gender: "male" | "female" | "other"
       race:
         | "asian"
@@ -291,6 +339,14 @@ export const Constants = {
         "muscular",
         "petite",
         "tall",
+      ],
+      clothingCategoryEnum: [
+        "top",
+        "bottom",
+        "one-piece",
+        "outer",
+        "shoes",
+        "accessory",
       ],
       gender: ["male", "female", "other"],
       race: [
