@@ -31,7 +31,7 @@ const formSchema = z.object({
   name: z
     .string()
     .min(1, "상품명을 작성해주세요.")
-    .max(20, "20자 이하로 작성해주세요."),
+    .max(100, "100자 이하로 작성해주세요."),
   category: z.enum(clothingCategoryEnum.enumValues),
   shopping_url: z.string().min(1, "상품링크를 작성해주세요."),
 });
