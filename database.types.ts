@@ -62,6 +62,7 @@ export type Database = {
           model_id: number
           name: string
           profile_id: string | null
+          prompt: string | null
           race: Database["public"]["Enums"]["race"]
           reference_model_id: number | null
           style: Database["public"]["Enums"]["style"]
@@ -78,6 +79,7 @@ export type Database = {
           model_id?: never
           name: string
           profile_id?: string | null
+          prompt?: string | null
           race?: Database["public"]["Enums"]["race"]
           reference_model_id?: number | null
           style?: Database["public"]["Enums"]["style"]
@@ -94,6 +96,7 @@ export type Database = {
           model_id?: never
           name?: string
           profile_id?: string | null
+          prompt?: string | null
           race?: Database["public"]["Enums"]["race"]
           reference_model_id?: number | null
           style?: Database["public"]["Enums"]["style"]

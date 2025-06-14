@@ -1,5 +1,6 @@
 import type { Route } from "./+types/model-create";
 
+import OpenAI from "openai";
 import { Form, data, redirect } from "react-router";
 import { z } from "zod";
 
@@ -17,6 +18,7 @@ import {
 } from "~/core/components/ui/select";
 import { Switch } from "~/core/components/ui/switch";
 import { Textarea } from "~/core/components/ui/textarea";
+import makeServerClient from "~/core/lib/supa-client.server";
 
 import {
   bodyTypeObject,
@@ -24,6 +26,7 @@ import {
   raceObject,
   styleObject,
 } from "../\bconstants";
+import { insertModel } from "../mutations";
 import {
   ageRangeEnum,
   bodyTypeEnum,
@@ -53,6 +56,16 @@ const formSchema = z.object({
 });
 
 export const action = async ({ request }: Route.ActionArgs) => {
+  const [client] = makeServerClient(request);
+
+  const {
+    data: { user },
+  } = await client.auth.getUser();
+
+  if (!user) {
+    return data(null, { status: 401 });
+  }
+
   const formData = await request.formData();
   const {
     data: validData,
@@ -64,12 +77,58 @@ export const action = async ({ request }: Route.ActionArgs) => {
   }
 
   // gpt-image-1 으로 모델 이미지 생성
+  const openai = new OpenAI({
+    apiKey: process.env.OPEN_AI_API_KEY || "",
+    baseURL: "https://api.openai.com/v1",
+  });
+
+  const response = await openai.responses.create({
+    model: "gpt-4.1-mini",
+    input: `A race of the model is ${validData.race}. ${validData.gender} model in ${validData.ageRange}, with a ${validData.bodyType} build, wearing ${validData.style} fashion. Additional prompt for model: ${validData.prompt}.Photographed for an online fashion store. He is standing or posing naturally as if modeling clothing for a product detail page or lookbook. Clean background, high-resolution, photo-realistic style.`,
+    tools: [{ type: "image_generation", size: "1024x1536", quality: "low" }],
+  });
 
   // 모델 이미지 storage 에 저장
+  const imageData = response.output
+    .filter((output) => output.type === "image_generation_call")
+    .map((output) => output.result);
 
-  // 모델 테이블에 저장
+  if (imageData.length > 0) {
+    const imageBase64 = imageData[0];
+    if (!imageBase64)
+      return data(
+        { error: "이미지 생성에 실패했습니다. 잠시 후 다시 시도해주세요." },
+        { status: 400 },
+      );
+    const imageBuffer = Buffer.from(imageBase64, "base64");
 
-  return redirect("/models");
+    const date = new Date().toISOString();
+    const { error: uploadError } = await client.storage
+      .from("models")
+      .upload(`/${user.id}/${date}`, imageBuffer, {
+        contentType: "image/png",
+        upsert: true,
+      });
+
+    if (uploadError) {
+      return data({ error: uploadError.message }, { status: 400 });
+    }
+
+    const {
+      data: { publicUrl },
+    } = client.storage.from("models").getPublicUrl(`/${user.id}/${date}`);
+
+    await insertModel(client, {
+      userId: user.id,
+      ...validData,
+      imageUrl: publicUrl,
+    });
+    return redirect("/models");
+  } else
+    return data(
+      { message: "이미지 생성에 실패했습니다. 잠시 후 다시 시도해주세요." },
+      { status: 400 },
+    );
 };
 
 export default function ModelCreate({ actionData }: Route.ComponentProps) {

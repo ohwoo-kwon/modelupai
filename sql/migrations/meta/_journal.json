@@ -22,6 +22,13 @@
       "when": 1749362419688,
       "tag": "0002_nostalgic_ma_gnuci",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1749859490997,
+      "tag": "0003_gigantic_starbolt",
+      "breakpoints": true
     }
   ]
 }

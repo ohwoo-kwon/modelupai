@@ -84,6 +84,7 @@ export const models = pgTable(
     ),
     image_url: text().notNull(),
     is_public: boolean().default(true).notNull(),
+    prompt: text(),
     ...timestamps,
   },
   (table) => [
