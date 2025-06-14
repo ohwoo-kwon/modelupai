@@ -4,14 +4,24 @@ import { Link } from "react-router";
 
 import { Button } from "~/core/components/ui/button";
 import { Input } from "~/core/components/ui/input";
+import makeServerClient from "~/core/lib/supa-client.server";
 
 import ModelCard from "../components/model-card";
+import { getModels } from "../queries";
 
 export const meta: Route.MetaFunction = () => {
   return [{ title: `모델 | ${import.meta.env.VITE_APP_NAME}` }];
 };
 
-export default function Models() {
+export const loader = async ({ request }: Route.LoaderArgs) => {
+  const [client] = makeServerClient(request);
+
+  const models = await getModels(client);
+
+  return { models };
+};
+
+export default function Models({ loaderData }: Route.ComponentProps) {
   return (
     <div className="space-y-10 px-5">
       <div className="flex flex-col items-center gap-2">
@@ -30,20 +40,28 @@ export default function Models() {
         </Button>
       </div>
       <div className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-4">
-        {Array.from({ length: 10 })
-          .fill(0)
-          .map((_, i) => (
+        {loaderData.models.map(
+          ({
+            model_id,
+            image_url,
+            name,
+            age_range,
+            body_type,
+            race,
+            style,
+          }) => (
             <ModelCard
-              key={`model_${i}`}
-              modelId={i}
-              imgUrl="https://cdn.pixabay.com/photo/2022/03/24/15/46/woman-7089304_1280.jpg"
-              name="꽃다발을 든 여자"
-              ageRange="21-25"
-              bodyType="average"
-              race="asian"
-              style="cute"
+              key={`model_${model_id}`}
+              modelId={model_id}
+              imgUrl={image_url}
+              name={name}
+              ageRange={age_range}
+              bodyType={body_type}
+              race={race}
+              style={style}
             />
-          ))}
+          ),
+        )}
       </div>
     </div>
   );

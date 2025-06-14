@@ -84,9 +84,15 @@ export const action = async ({ request }: Route.ActionArgs) => {
 
   const response = await openai.responses.create({
     model: "gpt-4.1-mini",
-    input: `A race of the model is ${validData.race}. ${validData.gender} model in ${validData.ageRange}, with a ${validData.bodyType} build, wearing ${validData.style} fashion. Additional prompt for model: ${validData.prompt}.Photographed for an online fashion store. He is standing or posing naturally as if modeling clothing for a product detail page or lookbook. Clean background, high-resolution, photo-realistic style.`,
+    input: `Pretty and handsome shopping mall model. A race of the model is ${validData.race}. ${validData.gender} model in ${validData.ageRange}, with a ${validData.bodyType} build, wearing ${validData.style} fashion. Additional prompt for model: ${validData.prompt}.Photographed for an online fashion store. He is standing or posing naturally as if modeling clothing for a product detail page or lookbook. Clean background, high-resolution, photo-realistic style. You need to make model always pretty and handsome.`,
     tools: [{ type: "image_generation", size: "1024x1536", quality: "low" }],
   });
+
+  if (response.error)
+    return data(
+      { error: `${response.error.code}: ${response.error.message}` },
+      { status: 400 },
+    );
 
   // 모델 이미지 storage 에 저장
   const imageData = response.output
@@ -126,7 +132,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
     return redirect("/models");
   } else
     return data(
-      { message: "이미지 생성에 실패했습니다. 잠시 후 다시 시도해주세요." },
+      { error: "이미지 생성에 실패했습니다. 잠시 후 다시 시도해주세요." },
       { status: 400 },
     );
 };
@@ -292,6 +298,9 @@ export default function ModelCreate({ actionData }: Route.ComponentProps) {
             </div>
           </div>
           <FormButton label="모델 생성" className="w-full" />
+          {actionData && "error" in actionData && actionData.error ? (
+            <FormErrors errors={[actionData.error]} />
+          ) : null}
         </Form>
       </Card>
     </div>
