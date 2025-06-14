@@ -27,6 +27,7 @@ import {
   styleObject,
 } from "../\bconstants";
 import { insertModel } from "../mutations";
+import { getModelById } from "../queries";
 import {
   ageRangeEnum,
   bodyTypeEnum,
@@ -37,6 +38,27 @@ import {
 
 export const meta: Route.MetaFunction = () => {
   return [{ title: `모델 생성 | ${import.meta.env.VITE_APP_NAME}` }];
+};
+
+const searchParamsSchema = z.object({ modelId: z.coerce.number().optional() });
+
+export const loader = async ({ request }: Route.LoaderArgs) => {
+  const [client] = makeServerClient(request);
+
+  const searchParams = Object.fromEntries(new URL(request.url).searchParams);
+  const {
+    data: validData,
+    success,
+    error,
+  } = searchParamsSchema.safeParse(searchParams);
+  if (!success)
+    return data({ error: error.flatten().fieldErrors }, { status: 400 });
+
+  if (validData.modelId) {
+    const model = await getModelById(client, validData.modelId);
+    return { model };
+  }
+  return { model: null };
 };
 
 const formSchema = z.object({
@@ -82,11 +104,48 @@ export const action = async ({ request }: Route.ActionArgs) => {
     baseURL: "https://api.openai.com/v1",
   });
 
-  const response = await openai.responses.create({
-    model: "gpt-4.1-mini",
-    input: `Pretty and handsome shopping mall model. A race of the model is ${validData.race}. ${validData.gender} model in ${validData.ageRange}, with a ${validData.bodyType} build, wearing ${validData.style} fashion. Additional prompt for model: ${validData.prompt}.Photographed for an online fashion store. He is standing or posing naturally as if modeling clothing for a product detail page or lookbook. Clean background, high-resolution, photo-realistic style. You need to make model always pretty and handsome.`,
-    tools: [{ type: "image_generation", size: "1024x1536", quality: "low" }],
-  });
+  let response: OpenAI.Responses.Response & {
+    _request_id?: string | null;
+  };
+
+  if (validData.referenceModelId) {
+    const model = await getModelById(client, validData.referenceModelId);
+
+    response = await openai.responses.create({
+      model: "gpt-4.1",
+      input: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "input_text",
+              text: `The model should appear well-groomed and photo-ready, suitable for a professional fashion lookbook. A race of the model is ${validData.race}. ${validData.gender} model in ${validData.ageRange}, with a ${validData.bodyType} build, wearing ${validData.style} fashion. Additional prompt for model: ${validData.prompt}.Photographed for an online fashion store. He is standing or posing naturally as if modeling clothing for a product detail page or lookbook. Clean background, high-resolution, photo-realistic style. You need to make model always pretty and handsome. The model's face and appearance should be based on the person in the input image. Ensure the model's likeness is preserved while fitting the fashion concept.`,
+            },
+            {
+              type: "input_image",
+              image_url: model.image_url,
+              detail: "low",
+            },
+          ],
+        },
+      ],
+      tools: [
+        {
+          type: "image_generation",
+          quality: "low",
+          model: "gpt-image-1",
+          size: "1024x1536",
+          output_format: "png",
+        },
+      ],
+    });
+  } else {
+    response = await openai.responses.create({
+      model: "gpt-4.1-mini",
+      input: `The model should appear well-groomed and photo-ready, suitable for a professional fashion lookbook. A race of the model is ${validData.race}. ${validData.gender} model in ${validData.ageRange}, with a ${validData.bodyType} build, wearing ${validData.style} fashion. Additional prompt for model: ${validData.prompt}.Photographed for an online fashion store. He is standing or posing naturally as if modeling clothing for a product detail page or lookbook. Clean background, high-resolution, photo-realistic style. You need to make model always pretty and handsome.`,
+      tools: [{ type: "image_generation", size: "1024x1536", quality: "low" }],
+    });
+  }
 
   if (response.error)
     return data(
@@ -137,7 +196,10 @@ export const action = async ({ request }: Route.ActionArgs) => {
     );
 };
 
-export default function ModelCreate({ actionData }: Route.ComponentProps) {
+export default function ModelCreate({
+  loaderData,
+  actionData,
+}: Route.ComponentProps) {
   return (
     <div className="space-y-10 px-5">
       <div className="flex flex-col items-center gap-2">
@@ -146,14 +208,35 @@ export default function ModelCreate({ actionData }: Route.ComponentProps) {
       </div>
       <Card className="mx-auto max-w-screen-md px-8">
         <Form className="w-full space-y-16" method="POST">
-          {/* <div className="hidden space-y-1">
-            <Label htmlFor="referenceModelId">참고 모델ID</Label>
-            <Input id="referenceModelId" name="referenceModelId" />
-          </div> */}
           <div className="space-y-4">
+            {loaderData && "model" in loaderData && loaderData.model && (
+              <>
+                <img
+                  src={loaderData.model.image_url}
+                  alt={loaderData.model.name}
+                  className="mx-auto w-full max-w-96"
+                />
+                <Input
+                  id="referenceModelId"
+                  type="hidden"
+                  name="referenceModelId"
+                  defaultValue={loaderData.model.model_id}
+                />
+              </>
+            )}
             <div className="space-y-2">
               <Label htmlFor="name">모델명</Label>
-              <Input id="name" name="name" />
+              <Input
+                id="name"
+                name="name"
+                defaultValue={
+                  (loaderData &&
+                    "model" in loaderData &&
+                    loaderData.model &&
+                    loaderData.model.name) ||
+                  ""
+                }
+              />
               {actionData &&
               "fieldErrors" in actionData &&
               actionData.fieldErrors?.name ? (
@@ -166,6 +249,13 @@ export default function ModelCreate({ actionData }: Route.ComponentProps) {
                 className="h-28 resize-none"
                 id="description"
                 name="description"
+                defaultValue={
+                  (loaderData &&
+                    "model" in loaderData &&
+                    loaderData.model &&
+                    loaderData.model.description) ||
+                  ""
+                }
               />
               {actionData &&
               "fieldErrors" in actionData &&
@@ -175,7 +265,14 @@ export default function ModelCreate({ actionData }: Route.ComponentProps) {
             </div>
             <div className="space-y-2">
               <Label htmlFor="gender">성별</Label>
-              <Select name="gender" defaultValue={genderEnum.enumValues[1]}>
+              <Select
+                name="gender"
+                defaultValue={
+                  loaderData && "model" in loaderData && loaderData.model
+                    ? loaderData.model.gender
+                    : genderEnum.enumValues[1]
+                }
+              >
                 <SelectTrigger id="gender" className="w-full">
                   <SelectValue />
                 </SelectTrigger>
@@ -195,7 +292,14 @@ export default function ModelCreate({ actionData }: Route.ComponentProps) {
             </div>
             <div className="space-y-2">
               <Label htmlFor="ageRange">나이</Label>
-              <Select name="ageRange" defaultValue={ageRangeEnum.enumValues[4]}>
+              <Select
+                name="ageRange"
+                defaultValue={
+                  loaderData && "model" in loaderData && loaderData.model
+                    ? loaderData.model.age_range
+                    : ageRangeEnum.enumValues[4]
+                }
+              >
                 <SelectTrigger id="ageRange" className="w-full">
                   <SelectValue />
                 </SelectTrigger>
@@ -215,7 +319,14 @@ export default function ModelCreate({ actionData }: Route.ComponentProps) {
             </div>
             <div className="space-y-2">
               <Label htmlFor="bodyType">체형</Label>
-              <Select name="bodyType" defaultValue={bodyTypeEnum.enumValues[1]}>
+              <Select
+                name="bodyType"
+                defaultValue={
+                  loaderData && "model" in loaderData && loaderData.model
+                    ? loaderData.model.body_type
+                    : bodyTypeEnum.enumValues[1]
+                }
+              >
                 <SelectTrigger id="bodyType" className="w-full">
                   <SelectValue />
                 </SelectTrigger>
@@ -235,7 +346,14 @@ export default function ModelCreate({ actionData }: Route.ComponentProps) {
             </div>
             <div className="space-y-2">
               <Label htmlFor="race">인종</Label>
-              <Select name="race" defaultValue={raceEnum.enumValues[0]}>
+              <Select
+                name="race"
+                defaultValue={
+                  loaderData && "model" in loaderData && loaderData.model
+                    ? loaderData.model.race
+                    : raceEnum.enumValues[0]
+                }
+              >
                 <SelectTrigger id="race" className="w-full">
                   <SelectValue />
                 </SelectTrigger>
@@ -255,7 +373,14 @@ export default function ModelCreate({ actionData }: Route.ComponentProps) {
             </div>
             <div className="space-y-2">
               <Label htmlFor="style">스타일</Label>
-              <Select name="style" defaultValue={styleEnum.enumValues[0]}>
+              <Select
+                name="style"
+                defaultValue={
+                  loaderData && "model" in loaderData && loaderData.model
+                    ? loaderData.model.style
+                    : styleEnum.enumValues[0]
+                }
+              >
                 <SelectTrigger id="style" className="w-full">
                   <SelectValue />
                 </SelectTrigger>
@@ -279,7 +404,13 @@ export default function ModelCreate({ actionData }: Route.ComponentProps) {
                 className="h-28 resize-none"
                 id="prompt"
                 name="prompt"
-                placeholder="예시) 키는 180cm, 인사동 카페거리에서 걷는 모습, 전신 사진"
+                defaultValue={
+                  (loaderData &&
+                    "model" in loaderData &&
+                    loaderData.model &&
+                    loaderData.model.prompt) ||
+                  ""
+                }
               />
               {actionData &&
               "fieldErrors" in actionData &&

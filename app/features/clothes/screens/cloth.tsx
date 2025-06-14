@@ -50,12 +50,15 @@ export default function Cloth({ loaderData }: Route.ComponentProps) {
           />
           <div className="space-y-2">
             <Button className="w-full">
-              <Link to={cloth.shopping_url} target="_blank">
+              <Link
+                className="w-full"
+                to={`/fitting?clothId=${cloth.cloth_id}`}
+              >
                 피팅 해보기
               </Link>
             </Button>
             <Button className="w-full" variant="secondary">
-              <Link to={cloth.shopping_url} target="_blank">
+              <Link className="w-full" to={cloth.shopping_url} target="_blank">
                 구매하러 가기
               </Link>
             </Button>
