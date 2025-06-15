@@ -19,8 +19,10 @@ export default function ImageInput({ errors }: { errors: string[] | null }) {
       <Label
         htmlFor="image"
         className={cn(
-          `text-muted-foreground hover:bg-muted mx-auto flex aspect-square max-w-96 cursor-pointer items-center justify-center overflow-hidden rounded border`,
-          image ? "border-1" : "border-muted-foreground border-4 border-dashed",
+          `text-muted-foreground hover:bg-muted mx-auto flex max-w-96 cursor-pointer items-center justify-center overflow-hidden rounded border`,
+          image
+            ? "border-1"
+            : "border-muted-foreground aspect-square border-4 border-dashed",
         )}
       >
         {image ? (
