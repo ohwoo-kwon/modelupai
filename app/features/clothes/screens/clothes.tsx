@@ -30,7 +30,9 @@ export default function Clothes({ loaderData }: Route.ComponentProps) {
         <h3 className="text-center md:text-lg">
           Model Up AI 를 통해 원하는 옷을 피팅해볼 수 있어요.
         </h3>
-        <h5>원하는 옷이 없다면 옷을 추가해보세요.</h5>
+        <h5>
+          원하는 옷을 클릭해서 피팅하거나 원하는 옷이 없다면 옷을 추가해보세요.
+        </h5>
       </div>
       <div className="flex justify-end">
         <Button className="w-full md:w-fit" asChild>

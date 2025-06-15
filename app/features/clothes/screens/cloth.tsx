@@ -51,19 +51,6 @@ export const action = async ({ request }: Route.ActionArgs) => {
   if (!success)
     return data({ fieldErrors: error.flatten().fieldErrors }, { status: 400 });
 
-  // for (let i = 0; i < validData.image.length; i++) {
-  //   const img = validData.image[i];
-  //   const buffer = await fileToBase64(img);
-  //   imageBuffers.push(`data:${img.type};base64,${buffer}`);
-  // }
-
-  // const types: { type: "input_image"; image_url: string; detail: "high" }[] =
-  //   imageBuffers.map((v) => ({
-  //     type: "input_image",
-  //     image_url: v,
-  //     detail: "high",
-  //   }));
-
   const imageBuffer = await fileToBase64(validData.image);
 
   const openai = new OpenAI({
@@ -79,24 +66,25 @@ export const action = async ({ request }: Route.ActionArgs) => {
         content: [
           {
             type: "input_text",
-            text: `
-            Act as a clothing stylist.
-Replace only the outfit in the second image with the one from the first image.
-Do not alter the model’s pose, face, body shape, expression, hairstyle, hands, or any background elements.
+            text: "Replace the outfit of the model in the photo with a new outfit.",
+            //             `Keep the person's original face and body shape exactly the same. Change only the clothes. Do not alter the skin tone, facial structure, or proportions
 
-Overlay the clothing from the first image onto the person in the second image.
-Keep the second image entirely unchanged except for the outfit. This includes pose, face, proportions, lighting, and background.
+            // Clothing Reference (First Image): Use this outfit as-is, including fabric, design, color, texture, and fit.
+            // Model Reference (Second Image): DO NOT change the model’s pose, face, lighting, body shape, background, or proportions. Only modify the outfit.
 
-Negative Prompt (implicit):
-Do not change the person's face, pose, body, hands, background, camera angle, or lighting.
-This is not a recreation — just change the clothes.`,
+            // Overlay the clothing from the first image onto the model in the second image as if the person is realistically wearing it.
+
+            // Positive Prompt:
+            // A realistic, high-quality photo of the model wearing the exact clothes from the first image. The clothing is naturally fitted to the model’s body. Details such as fabric folds, textures, color accuracy, and pattern alignment are preserved. The lighting, shadows, and angles match the original model photo to ensure seamless integration.
+
+            // Negative Prompt:
+            // blurry, poorly fitted clothes, wrong outfit, incorrect fabric, low-resolution textures, mismatched colors, deformed limbs, distorted face, added or missing body parts, unnatural pose, inconsistent lighting, unrealistic blending, bad anatomy, outfit artifacts.`,
           },
           {
             type: "input_image",
             image_url: validData.clothImgUrl,
             detail: "high",
           },
-          // ...types,
           {
             type: "input_image",
             image_url: `data:${validData.image.type};base64,${imageBuffer}`,
@@ -116,8 +104,8 @@ This is not a recreation — just change the clothes.`,
     ],
   });
 
-  console.log(response.usage?.input_tokens);
-  console.log(response.usage?.output_tokens);
+  // console.log(response.usage?.input_tokens);
+  // console.log(response.usage?.output_tokens);
 
   if (response.error)
     return data(
@@ -152,26 +140,66 @@ export default function Cloth({
             name="clothImgUrl"
             defaultValue={cloth.image_url}
           />
-          <img
-            src={cloth.image_url}
-            alt={cloth.name}
-            className="mx-auto w-full max-w-96 rounded border"
-          />
-          <ImageInput
-            errors={
-              actionData &&
-              "fieldErrors" in actionData &&
-              actionData.fieldErrors.image
-                ? actionData.fieldErrors.image
-                : null
-            }
-          />
-          {actionData && "imageData" in actionData && actionData.imageData && (
+          <div className="space-y-1">
+            <h5 className="font-bold">옷 사진</h5>
             <img
-              className="mx-auto max-w-96 rounded border"
-              src={actionData.imageData}
-              alt="결과 이미지"
+              src={cloth.image_url}
+              alt={cloth.name}
+              className="mx-auto w-full max-w-96 rounded border"
             />
+            {cloth.shopping_url.startsWith("https://link.coupang.com/") && (
+              <p className="text-muted-foreground max-w-96 text-xs">
+                "이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의
+                수수료를 제공받습니다."
+              </p>
+            )}
+          </div>
+          <div className="space-y-1">
+            <h5 className="font-bold">내 사진</h5>
+            <ImageInput
+              errors={
+                actionData &&
+                "fieldErrors" in actionData &&
+                actionData.fieldErrors.image
+                  ? actionData.fieldErrors.image
+                  : null
+              }
+            />
+            <p className="text-muted-foreground max-w-96 text-xs">
+              👤 인물 사진 촬영 가이드
+            </p>
+            <p className="text-muted-foreground ml-4 max-w-96 text-xs">
+              • 정면을 바라보는 상반신 사진이 가장 이상적입니다.
+            </p>
+            <p className="text-muted-foreground ml-4 max-w-96 text-xs">
+              • 얼굴의 이목구비가 뚜렷하고, 모자/선글라스/마스크 등으로 가려지지
+              않은 사진을 사용해 주세요.
+            </p>
+            <p className="text-muted-foreground ml-4 max-w-96 text-xs">
+              • 어깨부터 머리까지 잘리는 부분 없이 전체가 보이도록 촬영해
+              주세요.
+            </p>
+            <p className="text-muted-foreground ml-4 max-w-96 text-xs">
+              • 밝고 균일한 조명, 단순한 배경에서 촬영하면 정확도가 올라갑니다.
+            </p>
+            <p className="text-muted-foreground ml-4 max-w-96 text-xs">
+              • 흐릿하거나 픽셀이 깨진 저화질 사진은 사용을 권장하지 않습니다.
+            </p>
+            <p className="text-muted-foreground mt-4 max-w-96 text-xs">
+              ⚠️ 본 이미지는 AI를 활용해 생성된 합성 이미지로, 실제 인물이 해당
+              의상을 착용한 모습과는 차이가 있을 수 있습니다. 정확한 착용
+              이미지는 참고용으로만 사용해 주세요.
+            </p>
+          </div>
+          {actionData && "imageData" in actionData && actionData.imageData && (
+            <div className="space-y-1">
+              <h5 className="font-bold">결과</h5>
+              <img
+                className="mx-auto max-w-96 rounded border"
+                src={actionData.imageData}
+                alt="결과 이미지"
+              />
+            </div>
           )}
           <div className="space-y-2">
             <FormButton label="입어보기" className="w-full" />

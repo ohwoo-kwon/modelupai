@@ -1,5 +1,5 @@
 import { ImageIcon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import FormErrors from "~/core/components/form-errors";
 import { Input } from "~/core/components/ui/input";
@@ -8,12 +8,44 @@ import { cn } from "~/core/lib/utils";
 
 export default function ImageInput({ errors }: { errors: string[] | null }) {
   const [image, setImage] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
   const onChangeImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setImage(URL.createObjectURL(file));
     }
   };
+
+  useEffect(() => {
+    const handlePaste = (event: ClipboardEvent) => {
+      const items = event.clipboardData?.items;
+      if (!items) return;
+
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        if (item.type.startsWith("image/")) {
+          const file = item.getAsFile();
+          if (file) {
+            const imageUrl = URL.createObjectURL(file);
+            setImage(imageUrl);
+
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            if (inputRef.current) {
+              inputRef.current.files = dataTransfer.files;
+            }
+          }
+        }
+      }
+    };
+
+    window.addEventListener("paste", handlePaste);
+    return () => {
+      window.removeEventListener("paste", handlePaste);
+    };
+  }, []);
+
   return (
     <div className="mb-6">
       <Label
@@ -28,7 +60,11 @@ export default function ImageInput({ errors }: { errors: string[] | null }) {
         {image ? (
           <img className="object-fit w-full" src={image} />
         ) : (
-          <ImageIcon size={50} />
+          <div className="space-y-1 text-center">
+            <ImageIcon size={50} className="mx-auto" />
+            <p>드래그 & 드롭 가능</p>
+            <p>CTRL+C, CTRL+V 가능</p>
+          </div>
         )}
       </Label>
       {errors && (
@@ -41,6 +77,7 @@ export default function ImageInput({ errors }: { errors: string[] | null }) {
         name="image"
         type="file"
         className="hidden"
+        ref={inputRef}
         onChange={onChangeImage}
       />
     </div>
