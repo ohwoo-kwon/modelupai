@@ -1,5 +1,6 @@
 import type { Route } from "./+types/cloth";
 
+import { DateTime } from "luxon";
 import OpenAI from "openai";
 import { Form, Link, data } from "react-router";
 import { z } from "zod";
@@ -64,7 +65,14 @@ export const action = async ({ request }: Route.ActionArgs) => {
   if (!success)
     return data({ fieldErrors: error.flatten().fieldErrors }, { status: 400 });
 
-  const makeImageCount = await getMakeImageCount(client, user.id);
+  const startDate = DateTime.now().startOf("day").toISO();
+  const endDate = DateTime.now().endOf("day").toISO();
+
+  const makeImageCount = await getMakeImageCount(client, {
+    profileId: user.id,
+    startDate,
+    endDate,
+  });
   if (makeImageCount && makeImageCount > 2) {
     return data({ error: "일일 사용 제한을 초과했습니다" }, { status: 400 });
   }

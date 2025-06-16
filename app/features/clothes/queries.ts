@@ -22,12 +22,18 @@ export const getClotheById = async (
 
 export const getMakeImageCount = async (
   client: SupabaseClient<Database>,
-  profileId: string,
+  {
+    profileId,
+    startDate,
+    endDate,
+  }: { profileId: string; startDate: string; endDate: string },
 ) => {
   const { data, error, count } = await client
     .from("profiles_clothes_rel")
     .select("*", { count: "exact" })
-    .eq("profile_id", profileId);
+    .eq("profile_id", profileId)
+    .gte("created_at", startDate)
+    .lte("created_at", endDate);
   if (error) throw error;
   return count;
 };
