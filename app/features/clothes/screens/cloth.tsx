@@ -172,8 +172,7 @@ export default function Cloth({
               • 정면을 바라보는 상반신 사진이 가장 이상적입니다.
             </p>
             <p className="text-muted-foreground ml-4 max-w-96 text-xs">
-              • 얼굴의 이목구비가 뚜렷하고, 모자/선글라스/마스크 등으로 가려지지
-              않은 사진을 사용해 주세요.
+              • 얼굴의 이목구비가 뚜렷하게 보일수록 인물 생성이 정확합니다.
             </p>
             <p className="text-muted-foreground ml-4 max-w-96 text-xs">
               • 어깨부터 머리까지 잘리는 부분 없이 전체가 보이도록 촬영해
@@ -187,8 +186,11 @@ export default function Cloth({
             </p>
             <p className="text-muted-foreground mt-4 max-w-96 text-xs">
               ⚠️ 본 이미지는 AI를 활용해 생성된 합성 이미지로, 실제 인물이 해당
-              의상을 착용한 모습과는 차이가 있을 수 있습니다. 정확한 착용
-              이미지는 참고용으로만 사용해 주세요.
+              의상을 착용한 모습과는 차이가 있을 수 있습니다. 착용 이미지는
+              참고용으로만 사용해 주세요.
+            </p>
+            <p className="text-muted-foreground mt-4 max-w-96 text-xs">
+              ⏰ 이미지 생성에 약 1분이 소요됩니다.
             </p>
           </div>
           {actionData && "imageData" in actionData && actionData.imageData && (
