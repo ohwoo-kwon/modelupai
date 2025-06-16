@@ -1,4 +1,5 @@
-import { type Route } from "@rr/app/features/users/apis/+types/edit-profile";
+import type { Route } from "@rr/app/features/users/apis/+types/edit-profile";
+
 import { UserIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useFetcher } from "react-router";
