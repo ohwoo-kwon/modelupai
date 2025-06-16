@@ -143,6 +143,48 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles_clothes_rel: {
+        Row: {
+          cloth_id: number | null
+          created_at: string
+          id: number
+          image_url: string
+          profile_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          cloth_id?: number | null
+          created_at?: string
+          id?: never
+          image_url: string
+          profile_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          cloth_id?: number | null
+          created_at?: string
+          id?: never
+          image_url?: string
+          profile_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_clothes_rel_cloth_id_clothes_cloth_id_fk"
+            columns: ["cloth_id"]
+            isOneToOne: false
+            referencedRelation: "clothes"
+            referencedColumns: ["cloth_id"]
+          },
+          {
+            foreignKeyName: "profiles_clothes_rel_profile_id_profiles_profile_id_fk"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

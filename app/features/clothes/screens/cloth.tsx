@@ -12,7 +12,8 @@ import { fileToBase64 } from "~/core/lib/utils";
 
 import ImageInput from "../components/image-input";
 import { clothingCategoryObject } from "../constants";
-import { getClotheById } from "../queries";
+import { insertMakeImage } from "../mutations";
+import { getClotheById, getMakeImageCount } from "../queries";
 
 export const meta: Route.MetaFunction = ({ data }) => {
   return [
@@ -38,9 +39,15 @@ export const loader = async ({ request, params }: Route.LoaderArgs) => {
 const formSchema = z.object({
   image: z.instanceof(File),
   clothImgUrl: z.string(),
+  clothId: z.coerce.number(),
 });
 
 export const action = async ({ request }: Route.ActionArgs) => {
+  const [client] = makeServerClient(request);
+
+  const {
+    data: { user },
+  } = await client.auth.getUser();
   const formData = await request.formData();
 
   const {
@@ -50,6 +57,13 @@ export const action = async ({ request }: Route.ActionArgs) => {
   } = formSchema.safeParse(Object.fromEntries(formData));
   if (!success)
     return data({ fieldErrors: error.flatten().fieldErrors }, { status: 400 });
+
+  const makeImageCount = await getMakeImageCount(client, user!.id);
+
+  if (makeImageCount && makeImageCount > 0) {
+    console.log("사용량 초과");
+    return data({ errors: "일일 사용 제한을 초과했습니다" }, { status: 400 });
+  }
 
   const imageBuffer = await fileToBase64(validData.image);
 
@@ -117,6 +131,12 @@ export const action = async ({ request }: Route.ActionArgs) => {
     .filter((output) => output.type === "image_generation_call")
     .map((output) => output.result);
 
+  await insertMakeImage(client, {
+    userId: user!.id,
+    clothId: validData.clothId,
+    imageUrl: "",
+  });
+
   return { imageData: `data:image/png;base64,${imageData[0]}` };
 };
 
@@ -135,6 +155,7 @@ export default function Cloth({
       </div>
       <Card className="mx-auto w-fit max-w-screen-md px-8">
         <Form method="POST" className="space-y-4" encType="multipart/form-data">
+          <input type="hidden" name="clothId" defaultValue={cloth.cloth_id} />
           <input
             type="hidden"
             name="clothImgUrl"

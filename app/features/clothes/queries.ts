@@ -19,3 +19,15 @@ export const getClotheById = async (
   if (error) throw error;
   return data;
 };
+
+export const getMakeImageCount = async (
+  client: SupabaseClient<Database>,
+  profileId: string,
+) => {
+  const { data, error, count } = await client
+    .from("profiles_clothes_rel")
+    .select("*", { count: "exact" })
+    .eq("profile_id", profileId);
+  if (error) throw error;
+  return count;
+};

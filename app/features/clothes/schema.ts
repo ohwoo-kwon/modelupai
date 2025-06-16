@@ -63,3 +63,41 @@ export const clothes = pgTable(
     }),
   ],
 );
+
+export const profilesClothesRel = pgTable(
+  "profiles_clothes_rel",
+  {
+    id: bigint({ mode: "number" }).primaryKey().generatedAlwaysAsIdentity(),
+    profile_id: uuid().references(() => profiles.profile_id),
+    cloth_id: bigint({ mode: "number" }).references(() => clothes.cloth_id),
+    image_url: text().notNull(),
+    ...timestamps,
+  },
+  (table) => [
+    pgPolicy("edit-profile-cloth-policy", {
+      for: "update",
+      to: authenticatedRole,
+      as: "permissive",
+      withCheck: sql`${authUid} = ${table.profile_id}`,
+      using: sql`${authUid} = ${table.profile_id}`,
+    }),
+    pgPolicy("delete-profile-cloth-policy", {
+      for: "delete",
+      to: authenticatedRole,
+      as: "permissive",
+      using: sql`${authUid} = ${table.profile_id}`,
+    }),
+    pgPolicy("select-profile-cloth-policy", {
+      for: "select",
+      to: "public",
+      as: "permissive",
+      using: sql`true`,
+    }),
+    pgPolicy("insert-profile-cloth-policy", {
+      for: "insert",
+      to: authenticatedRole,
+      as: "permissive",
+      withCheck: sql`${authUid} = ${table.profile_id}`,
+    }),
+  ],
+);

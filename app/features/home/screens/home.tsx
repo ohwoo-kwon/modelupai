@@ -28,7 +28,7 @@ export default function Home() {
               첨단 AI 기술로 가상 피팅을 경험할 수 있습니다.
             </h3>
           </div>
-          <Button size="lg" className="p-10 text-xl">
+          <Button size="lg" className="p-10 text-xl" asChild>
             <Link to="/clothes">지금 시작하기</Link>
           </Button>
         </div>
@@ -123,7 +123,7 @@ export default function Home() {
           <h3 className="text-2xl">
             매일 3회 무료로 AI 가상 피팅 서비스를 이용해보세요.
           </h3>
-          <Button size="lg" className="p-10 text-xl">
+          <Button size="lg" className="p-10 text-xl" asChild>
             <Link to="/clothes">무료로 시작하기</Link>
           </Button>
         </div>
