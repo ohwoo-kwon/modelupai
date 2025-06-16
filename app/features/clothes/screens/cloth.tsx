@@ -5,6 +5,7 @@ import { Form, Link, data } from "react-router";
 import { z } from "zod";
 
 import FormButton from "~/core/components/form-button";
+import FormErrors from "~/core/components/form-errors";
 import { Button } from "~/core/components/ui/button";
 import { Card } from "~/core/components/ui/card";
 import makeServerClient from "~/core/lib/supa-client.server";
@@ -59,10 +60,8 @@ export const action = async ({ request }: Route.ActionArgs) => {
     return data({ fieldErrors: error.flatten().fieldErrors }, { status: 400 });
 
   const makeImageCount = await getMakeImageCount(client, user!.id);
-
-  if (makeImageCount && makeImageCount > 0) {
-    console.log("사용량 초과");
-    return data({ errors: "일일 사용 제한을 초과했습니다" }, { status: 400 });
+  if (makeImageCount && makeImageCount > 2) {
+    return data({ error: "일일 사용 제한을 초과했습니다" }, { status: 400 });
   }
 
   const imageBuffer = await fileToBase64(validData.image);
@@ -225,6 +224,9 @@ export default function Cloth({
             </div>
           )}
           <div className="space-y-2">
+            {actionData && "error" in actionData && actionData.error ? (
+              <FormErrors errors={[actionData.error]} />
+            ) : null}
             <FormButton label="입어보기" className="w-full" />
             <Button className="w-full" variant="secondary">
               <Link className="w-full" to={cloth.shopping_url} target="_blank">
