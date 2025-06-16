@@ -49,6 +49,11 @@ export const action = async ({ request }: Route.ActionArgs) => {
   const {
     data: { user },
   } = await client.auth.getUser();
+
+  if (!user) {
+    throw data(null, { status: 401 });
+  }
+
   const formData = await request.formData();
 
   const {
@@ -59,7 +64,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
   if (!success)
     return data({ fieldErrors: error.flatten().fieldErrors }, { status: 400 });
 
-  const makeImageCount = await getMakeImageCount(client, user!.id);
+  const makeImageCount = await getMakeImageCount(client, user.id);
   if (makeImageCount && makeImageCount > 2) {
     return data({ error: "일일 사용 제한을 초과했습니다" }, { status: 400 });
   }
@@ -130,10 +135,35 @@ export const action = async ({ request }: Route.ActionArgs) => {
     .filter((output) => output.type === "image_generation_call")
     .map((output) => output.result);
 
+  const imageBase64 = imageData[0];
+  if (!imageBase64)
+    return data(
+      { error: "이미지 생성에 실패했습니다. 잠시 후 다시 시도해주세요." },
+      { status: 400 },
+    );
+
+  const resultImageBuffer = Buffer.from(imageBase64, "base64");
+
+  const date = new Date().toISOString();
+  const { error: uploadError } = await client.storage
+    .from("result-image")
+    .upload(`/${user.id}/${date}`, resultImageBuffer, {
+      contentType: "image/png",
+      upsert: true,
+    });
+
+  if (uploadError) {
+    return data({ error: uploadError.message }, { status: 400 });
+  }
+
+  const {
+    data: { publicUrl },
+  } = client.storage.from("result-image").getPublicUrl(`/${user.id}/${date}`);
+
   await insertMakeImage(client, {
-    userId: user!.id,
+    userId: user.id,
     clothId: validData.clothId,
-    imageUrl: "",
+    imageUrl: publicUrl,
   });
 
   return { imageData: `data:image/png;base64,${imageData[0]}` };
