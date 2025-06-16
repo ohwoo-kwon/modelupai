@@ -46,8 +46,8 @@ export default function Home() {
               </div>
               <h3 className="text-2xl font-bold">AI 가상 피팅</h3>
               <p className="text-left">
-                최신 인공지능 기술을 활용하여 실제와 같은 피팅 경험을
-                제공합니다. 내 몸에 옷이 어떻게 맞는지 확인할 수 있습니다.
+                최신 인공지능 기술을 활용하여 옷이 스타일링을 확인할 수
+                있습니다.
               </p>
             </div>
             <div className="bg-accent-foreground text-accent mx-auto flex aspect-square w-84 flex-col items-center justify-center gap-10 p-5">
@@ -56,8 +56,7 @@ export default function Home() {
               </div>
               <h3 className="text-2xl font-bold">스마트 쇼핑</h3>
               <p className="text-left">
-                구매 전 미리 확인하여 사이즈 불일치로 인한 반품을 줄이고, 더
-                만족스러운 쇼핑을 할 수 있습니다.
+                구매 전 미리 확인하여 더 만족스러운 쇼핑을 할 수 있습니다.
               </p>
             </div>
             <div className="bg-accent-foreground text-accent mx-auto flex aspect-square w-84 flex-col items-center justify-center gap-10 p-5">
