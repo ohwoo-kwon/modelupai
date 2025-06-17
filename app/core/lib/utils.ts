@@ -20,5 +20,5 @@ export async function streamToBase64(stream: ReadableStream) {
 
   const base64 = buffer.toString("base64");
 
-  return `data:img/png;base64,${base64}`;
+  return base64;
 }

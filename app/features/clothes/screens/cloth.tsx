@@ -190,7 +190,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
     imageUrl: publicUrl,
   });
 
-  return { imageData: imageUrl };
+  return { imageData: `data:img/png;base64,${imageUrl}` };
 };
 
 export default function Cloth({
