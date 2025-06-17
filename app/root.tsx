@@ -57,13 +57,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <ScrollRestoration />
         <Scripts />
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-HZS8YQ6SMS"></script>
-        <script>
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-        
-          gtag('config', 'G-HZS8YQ6SMS');
-        </script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-HZS8YQ6SMS');`,
+          }}
+        />
       </body>
     </html>
   );
