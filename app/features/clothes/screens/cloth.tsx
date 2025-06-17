@@ -166,29 +166,29 @@ export const action = async ({ request }: Route.ActionArgs) => {
   //     { status: 400 },
   //   );
 
-  // const resultImageBuffer = Buffer.from(imageBase64, "base64");
+  const resultImageBuffer = Buffer.from(imageUrl, "base64");
 
-  // const date = new Date().toISOString();
-  // const { error: uploadError } = await client.storage
-  //   .from("result-image")
-  //   .upload(`/${user.id}/${date}`, resultImageBuffer, {
-  //     contentType: "image/png",
-  //     upsert: true,
-  //   });
+  const date = new Date().toISOString();
+  const { error: uploadError } = await client.storage
+    .from("result-image")
+    .upload(`/${user.id}/${date}`, resultImageBuffer, {
+      contentType: "image/png",
+      upsert: true,
+    });
 
-  // if (uploadError) {
-  //   return data({ error: uploadError.message }, { status: 400 });
-  // }
+  if (uploadError) {
+    return data({ error: uploadError.message }, { status: 400 });
+  }
 
-  // const {
-  //   data: { publicUrl },
-  // } = client.storage.from("result-image").getPublicUrl(`/${user.id}/${date}`);
+  const {
+    data: { publicUrl },
+  } = client.storage.from("result-image").getPublicUrl(`/${user.id}/${date}`);
 
-  // await insertMakeImage(client, {
-  //   userId: user.id,
-  //   clothId: validData.clothId,
-  //   imageUrl: publicUrl,
-  // });
+  await insertMakeImage(client, {
+    userId: user.id,
+    clothId: validData.clothId,
+    imageUrl: publicUrl,
+  });
 
   return { imageData: imageUrl };
 };
