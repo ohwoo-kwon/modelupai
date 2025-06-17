@@ -3,6 +3,7 @@ import type { Route } from "./+types/cloth";
 import { DateTime } from "luxon";
 import OpenAI from "openai";
 import { Form, Link, data } from "react-router";
+import Replicate from "replicate";
 import { z } from "zod";
 
 import FormButton from "~/core/components/form-button";
@@ -10,7 +11,7 @@ import FormErrors from "~/core/components/form-errors";
 import { Button } from "~/core/components/ui/button";
 import { Card } from "~/core/components/ui/card";
 import makeServerClient from "~/core/lib/supa-client.server";
-import { fileToBase64 } from "~/core/lib/utils";
+import { fileToBase64, streamToBase64 } from "~/core/lib/utils";
 
 import ImageInput from "../components/image-input";
 import { clothingCategoryObject } from "../constants";
@@ -79,102 +80,117 @@ export const action = async ({ request }: Route.ActionArgs) => {
 
   const imageBuffer = await fileToBase64(validData.image);
 
-  const openai = new OpenAI({
-    apiKey: process.env.OPEN_AI_API_KEY || "",
-    baseURL: "https://api.openai.com/v1",
-  });
+  // const openai = new OpenAI({
+  //   apiKey: process.env.OPEN_AI_API_KEY || "",
+  //   baseURL: "https://api.openai.com/v1",
+  // });
+  const replicate = new Replicate();
 
-  const response = await openai.responses.create({
-    model: "gpt-4.1",
-    input: [
-      {
-        role: "user",
-        content: [
-          {
-            type: "input_text",
-            text: "Replace the outfit of the model in the photo with a new outfit.",
-            //             `Keep the person's original face and body shape exactly the same. Change only the clothes. Do not alter the skin tone, facial structure, or proportions
+  const input = {
+    prompt: `Put the person into the cloth in other image. Just change the outfit of people.`,
+    aspect_ratio: "1:1",
+    input_image_1: `data:${validData.image.type};base64,${imageBuffer}`,
+    input_image_2: validData.clothImgUrl,
+  };
 
-            // Clothing Reference (First Image): Use this outfit as-is, including fabric, design, color, texture, and fit.
-            // Model Reference (Second Image): DO NOT change the model’s pose, face, lighting, body shape, background, or proportions. Only modify the outfit.
+  const output = await replicate.run(
+    "flux-kontext-apps/multi-image-kontext-max",
+    { input },
+  );
 
-            // Overlay the clothing from the first image onto the model in the second image as if the person is realistically wearing it.
+  const imageUrl = await streamToBase64(output as ReadableStream);
 
-            // Positive Prompt:
-            // A realistic, high-quality photo of the model wearing the exact clothes from the first image. The clothing is naturally fitted to the model’s body. Details such as fabric folds, textures, color accuracy, and pattern alignment are preserved. The lighting, shadows, and angles match the original model photo to ensure seamless integration.
+  // const response = await openai.responses.create({
+  //   model: "gpt-4.1",
+  //   input: [
+  //     {
+  //       role: "user",
+  //       content: [
+  //         {
+  //           type: "input_text",
+  //           text: "Replace the outfit of the model in the photo with a new outfit.",
+  //           //             `Keep the person's original face and body shape exactly the same. Change only the clothes. Do not alter the skin tone, facial structure, or proportions
 
-            // Negative Prompt:
-            // blurry, poorly fitted clothes, wrong outfit, incorrect fabric, low-resolution textures, mismatched colors, deformed limbs, distorted face, added or missing body parts, unnatural pose, inconsistent lighting, unrealistic blending, bad anatomy, outfit artifacts.`,
-          },
-          {
-            type: "input_image",
-            image_url: validData.clothImgUrl,
-            detail: "high",
-          },
-          {
-            type: "input_image",
-            image_url: `data:${validData.image.type};base64,${imageBuffer}`,
-            detail: "high",
-          },
-        ],
-      },
-    ],
-    tools: [
-      {
-        type: "image_generation",
-        quality: "high",
-        model: "gpt-image-1",
-        size: "1024x1536",
-        output_format: "png",
-      },
-    ],
-  });
+  //           // Clothing Reference (First Image): Use this outfit as-is, including fabric, design, color, texture, and fit.
+  //           // Model Reference (Second Image): DO NOT change the model’s pose, face, lighting, body shape, background, or proportions. Only modify the outfit.
+
+  //           // Overlay the clothing from the first image onto the model in the second image as if the person is realistically wearing it.
+
+  //           // Positive Prompt:
+  //           // A realistic, high-quality photo of the model wearing the exact clothes from the first image. The clothing is naturally fitted to the model’s body. Details such as fabric folds, textures, color accuracy, and pattern alignment are preserved. The lighting, shadows, and angles match the original model photo to ensure seamless integration.
+
+  //           // Negative Prompt:
+  //           // blurry, poorly fitted clothes, wrong outfit, incorrect fabric, low-resolution textures, mismatched colors, deformed limbs, distorted face, added or missing body parts, unnatural pose, inconsistent lighting, unrealistic blending, bad anatomy, outfit artifacts.`,
+  //         },
+  //         {
+  //           type: "input_image",
+  //           image_url: validData.clothImgUrl,
+  //           detail: "high",
+  //         },
+  //         {
+  //           type: "input_image",
+  //           image_url: `data:${validData.image.type};base64,${imageBuffer}`,
+  //           detail: "high",
+  //         },
+  //       ],
+  //     },
+  //   ],
+  //   tools: [
+  //     {
+  //       type: "image_generation",
+  //       quality: "high",
+  //       model: "gpt-image-1",
+  //       size: "1024x1536",
+  //       output_format: "png",
+  //     },
+  //   ],
+  // });
 
   // console.log(response.usage?.input_tokens);
   // console.log(response.usage?.output_tokens);
 
-  if (response.error)
-    return data(
-      { error: `${response.error.code}: ${response.error.message}` },
-      { status: 400 },
-    );
+  // if (response.error)
+  //   return data(
+  //     { error: `${response.error.code}: ${response.error.message}` },
+  //     { status: 400 },
+  //   );
 
-  const imageData = response.output
-    .filter((output) => output.type === "image_generation_call")
-    .map((output) => output.result);
+  // const imageData = response.output
+  //   .filter((output) => output.type === "image_generation_call")
+  //   .map((output) => output.result);
 
-  const imageBase64 = imageData[0];
-  if (!imageBase64)
-    return data(
-      { error: "이미지 생성에 실패했습니다. 잠시 후 다시 시도해주세요." },
-      { status: 400 },
-    );
+  // const imageBase64 = imageData[0];
+  // if (!imageBase64)
+  //   return data(
+  //     { error: "이미지 생성에 실패했습니다. 잠시 후 다시 시도해주세요." },
+  //     { status: 400 },
+  //   );
 
-  const resultImageBuffer = Buffer.from(imageBase64, "base64");
+  // const resultImageBuffer = Buffer.from(imageBase64, "base64");
 
-  const date = new Date().toISOString();
-  const { error: uploadError } = await client.storage
-    .from("result-image")
-    .upload(`/${user.id}/${date}`, resultImageBuffer, {
-      contentType: "image/png",
-      upsert: true,
-    });
+  // const date = new Date().toISOString();
+  // const { error: uploadError } = await client.storage
+  //   .from("result-image")
+  //   .upload(`/${user.id}/${date}`, resultImageBuffer, {
+  //     contentType: "image/png",
+  //     upsert: true,
+  //   });
 
-  if (uploadError) {
-    return data({ error: uploadError.message }, { status: 400 });
-  }
+  // if (uploadError) {
+  //   return data({ error: uploadError.message }, { status: 400 });
+  // }
 
-  const {
-    data: { publicUrl },
-  } = client.storage.from("result-image").getPublicUrl(`/${user.id}/${date}`);
+  // const {
+  //   data: { publicUrl },
+  // } = client.storage.from("result-image").getPublicUrl(`/${user.id}/${date}`);
 
-  await insertMakeImage(client, {
-    userId: user.id,
-    clothId: validData.clothId,
-    imageUrl: publicUrl,
-  });
+  // await insertMakeImage(client, {
+  //   userId: user.id,
+  //   clothId: validData.clothId,
+  //   imageUrl: publicUrl,
+  // });
 
-  return { imageData: `data:image/png;base64,${imageData[0]}` };
+  return { imageData: imageUrl };
 };
 
 export default function Cloth({
