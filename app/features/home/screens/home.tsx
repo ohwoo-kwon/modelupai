@@ -7,14 +7,17 @@ import { Button } from "~/core/components/ui/button";
 export const meta: Route.MetaFunction = () => {
   return [
     { title: import.meta.env.VITE_APP_NAME },
-    { name: "description", content: "Just Start Making Your Project" },
+    {
+      name: "description",
+      content: "가상 AI 피팅 서비스를 무료로 즐길 수 있는 Fit Me Ai 입니다.",
+    },
   ];
 };
 
 export default function Home() {
   return (
     <div>
-      <section className="relative flex min-h-screen items-center justify-center">
+      <section className="relative flex min-h-screen items-center justify-center px-8">
         <div className="space-y-10">
           <h1 className="text-5xl font-bold">
             {import.meta.env.VITE_APP_NAME} 로 옷을
@@ -115,13 +118,13 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <section className="bg-accent text-muted-accent relative flex min-h-screen items-center justify-center text-center">
+      <section className="bg-accent text-muted-accent relative flex min-h-screen items-center justify-center px-8 text-center">
         <div className="space-y-10">
           <h1 className="text-5xl font-bold">
             지금 바로 {import.meta.env.VITE_APP_NAME} 를 체험해보세요.
           </h1>
           <h3 className="text-2xl">
-            매일 3회 무료로 AI 가상 피팅 서비스를 이용해보세요.
+            무료로 AI 가상 피팅 서비스를 이용해보세요.
           </h3>
           <Button size="lg" className="p-10 text-xl" asChild>
             <Link to="/clothes">무료로 시작하기</Link>

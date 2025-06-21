@@ -1,11 +1,12 @@
 import type { Route } from "./+types/cloth";
 
-import { DateTime } from "luxon";
-import { Form, Link, data } from "react-router";
+import { Loader2Icon } from "lucide-react";
+import OpenAI from "openai";
+import { useEffect } from "react";
+import { Form, data, useNavigation } from "react-router";
 import Replicate from "replicate";
 import { z } from "zod";
 
-import FormButton from "~/core/components/form-button";
 import FormErrors from "~/core/components/form-errors";
 import { Button } from "~/core/components/ui/button";
 import { Card } from "~/core/components/ui/card";
@@ -51,10 +52,6 @@ export const action = async ({ request }: Route.ActionArgs) => {
     data: { user },
   } = await client.auth.getUser();
 
-  if (!user) {
-    throw data(null, { status: 401 });
-  }
-
   const formData = await request.formData();
 
   const {
@@ -67,45 +64,76 @@ export const action = async ({ request }: Route.ActionArgs) => {
 
   const imageBuffer = await fileToBase64(validData.image);
 
+  const openai = new OpenAI({ apiKey: process.env.OPEN_AI_API_KEY });
+
+  const clothRes = await openai.responses.create({
+    model: "gpt-4.1-nano",
+    input: [
+      {
+        role: "user",
+        content: [
+          {
+            type: "input_text",
+            text: "Describe about the cloth. Output must be start with 'The cloth is' and just decribe about the cloth.",
+          },
+          {
+            type: "input_image",
+            image_url: validData.clothImgUrl,
+            detail: "high",
+          },
+        ],
+      },
+    ],
+  });
+
   const replicate = new Replicate();
 
   const input = {
-    prompt: `Put the person into the cloth in other image. Just change the outfit of people.`,
+    prompt: `Combine these photos into one fluid scene. Make the person in the first image wear the cloth that ${clothRes.output_text}. Keep the person except the cloth.`,
     aspect_ratio: "1:1",
-    input_image_1: `data:${validData.image.type};base64,${imageBuffer}`,
-    input_image_2: validData.clothImgUrl,
+    input_images: [
+      `data:${validData.image.type};base64,${imageBuffer}`,
+      validData.clothImgUrl,
+    ],
   };
 
-  const output = await replicate.run(
-    "flux-kontext-apps/multi-image-kontext-max",
-    { input },
-  );
+  // const input = {
+  //   prompt: `Put the person into the cloth in other image. Just change the outfit of people.`,
+  //   aspect_ratio: "1:1",
+  //   input_image_1: `data:${validData.image.type};base64,${imageBuffer}`,
+  //   input_image_2: validData.clothImgUrl,
+  // };
+
+  const output = await replicate.run("flux-kontext-apps/multi-image-list", {
+    input,
+  });
 
   const imageUrl = await streamToBase64(output as ReadableStream);
 
-  const resultImageBuffer = Buffer.from(imageUrl, "base64");
+  if (user) {
+    const resultImageBuffer = Buffer.from(imageUrl, "base64");
+    const date = new Date().toISOString();
+    const { error: uploadError } = await client.storage
+      .from("result-image")
+      .upload(`/${user.id}/${date}`, resultImageBuffer, {
+        contentType: "image/png",
+        upsert: true,
+      });
 
-  const date = new Date().toISOString();
-  const { error: uploadError } = await client.storage
-    .from("result-image")
-    .upload(`/${user.id}/${date}`, resultImageBuffer, {
-      contentType: "image/png",
-      upsert: true,
+    if (uploadError) {
+      return data({ error: uploadError.message }, { status: 400 });
+    }
+
+    const {
+      data: { publicUrl },
+    } = client.storage.from("result-image").getPublicUrl(`/${user.id}/${date}`);
+
+    await insertMakeImage(client, {
+      userId: user.id,
+      clothId: validData.clothId,
+      imageUrl: publicUrl,
     });
-
-  if (uploadError) {
-    return data({ error: uploadError.message }, { status: 400 });
   }
-
-  const {
-    data: { publicUrl },
-  } = client.storage.from("result-image").getPublicUrl(`/${user.id}/${date}`);
-
-  await insertMakeImage(client, {
-    userId: user.id,
-    clothId: validData.clothId,
-    imageUrl: publicUrl,
-  });
 
   return { imageData: `data:img/png;base64,${imageUrl}` };
 };
@@ -115,6 +143,14 @@ export default function Cloth({
   actionData,
 }: Route.ComponentProps) {
   const { cloth } = loaderData;
+  const navigation = useNavigation();
+
+  const submitting = navigation.state === "submitting";
+
+  useEffect(() => {
+    if (submitting) window.open(cloth.shopping_url, "blank");
+  }, [submitting]);
+
   return (
     <div className="space-y-10 px-5">
       <div className="flex flex-col items-center gap-2">
@@ -166,22 +202,18 @@ export default function Cloth({
               • 얼굴의 이목구비가 뚜렷하게 보일수록 인물 생성이 정확합니다.
             </p>
             <p className="text-muted-foreground ml-4 max-w-96 text-xs">
-              • 어깨부터 머리까지 잘리는 부분 없이 전체가 보이도록 촬영해
-              주세요.
-            </p>
-            <p className="text-muted-foreground ml-4 max-w-96 text-xs">
               • 밝고 균일한 조명, 단순한 배경에서 촬영하면 정확도가 올라갑니다.
             </p>
             <p className="text-muted-foreground ml-4 max-w-96 text-xs">
               • 흐릿하거나 픽셀이 깨진 저화질 사진은 사용을 권장하지 않습니다.
             </p>
             <p className="text-muted-foreground mt-4 max-w-96 text-xs">
-              ⚠️ 본 이미지는 AI를 활용해 생성된 합성 이미지로, 실제 인물이 해당
+              ⚠️ 본 이미지는 AI를 활용해 생성된 이미지로, 실제 인물이 해당
               의상을 착용한 모습과는 차이가 있을 수 있습니다. 착용 이미지는
               참고용으로만 사용해 주세요.
             </p>
             <p className="text-muted-foreground mt-4 max-w-96 text-xs">
-              ⏰ 이미지 생성에 약 1분이 소요됩니다.
+              ⏰ 이미지 생성에 약 10초 소요됩니다.
             </p>
           </div>
           {actionData && "imageData" in actionData && actionData.imageData && (
@@ -198,11 +230,12 @@ export default function Cloth({
             {actionData && "error" in actionData && actionData.error ? (
               <FormErrors errors={[actionData.error]} />
             ) : null}
-            <FormButton label="입어보기" className="w-full" />
-            <Button className="w-full" variant="secondary">
-              <Link className="w-full" to={cloth.shopping_url} target="_blank">
-                구매하러 가기
-              </Link>
+            <Button className="w-full" type="submit">
+              {submitting ? (
+                <Loader2Icon className="size-4 animate-spin" />
+              ) : (
+                "상품 확인 및 AI 피팅"
+              )}
             </Button>
           </div>
         </Form>

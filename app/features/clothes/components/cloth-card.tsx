@@ -16,7 +16,7 @@ export default function ClothCard({
   return (
     <Link
       to={`/clothes/${clothId}`}
-      className="flex h-fit flex-col rounded border transition-transform duration-300 hover:scale-105"
+      className="flex h-fit flex-col rounded border transition-transform duration-300"
     >
       <img className="w-full object-cover" src={imgUrl} alt={name} />
       <div className="flex items-center justify-between px-4 py-2">

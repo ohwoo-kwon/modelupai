@@ -78,7 +78,7 @@ function MenuButtons() {
           옷
         </Link>
       </SheetClose>
-      <SheetClose asChild>
+      {/* <SheetClose asChild>
         <Link
           to="/models"
           viewTransition
@@ -86,7 +86,7 @@ function MenuButtons() {
         >
           모델
         </Link>
-      </SheetClose>
+      </SheetClose> */}
       {/* <SheetClose asChild>
         <Link
           to="/"

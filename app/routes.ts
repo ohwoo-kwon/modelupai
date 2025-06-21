@@ -19,8 +19,8 @@ export default [
     ]),
     ...prefix("/clothes", [
       index("features/clothes/screens/clothes.tsx"),
+      route("/:clothId", "features/clothes/screens/cloth.tsx"),
       layout("core/layouts/private.layout.tsx", { id: "private-cloth" }, [
-        route("/:clothId", "features/clothes/screens/cloth.tsx"),
         route("/create", "features/clothes/screens/cloth-create.tsx"),
       ]),
     ]),

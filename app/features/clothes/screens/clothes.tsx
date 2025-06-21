@@ -1,8 +1,5 @@
 import type { Route } from "./+types/clothes";
 
-import { Link } from "react-router";
-
-import { Button } from "~/core/components/ui/button";
 import makeServerClient from "~/core/lib/supa-client.server";
 
 import ClothCard from "../components/cloth-card";
@@ -25,20 +22,17 @@ export default function Clothes({ loaderData }: Route.ComponentProps) {
     <div className="space-y-10 px-5">
       <div className="flex flex-col items-center gap-2">
         <h1 className="text-xl font-bold md:text-2xl">
-          Model Up AI 의 온라인 피팅
+          Model Up AI 의 가상 AI 피팅
         </h1>
         <h3 className="text-center md:text-lg">
-          Model Up AI 를 통해 원하는 옷을 피팅해볼 수 있어요.
+          Model Up AI 를 통해 원하는 옷을 가상 AI 피팅해볼 수 있어요.
         </h3>
-        <h5>
-          원하는 옷을 클릭해서 피팅하거나 원하는 옷이 없다면 옷을 추가해보세요.
-        </h5>
       </div>
-      <div className="flex justify-end">
+      {/* <div className="flex justify-end">
         <Button className="w-full md:w-fit" asChild>
           <Link to="/clothes/create">피팅하고 싶은 옷 추가</Link>
         </Button>
-      </div>
+      </div> */}
       <div className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-4">
         {loaderData.clothes.map(({ cloth_id, name, category, image_url }) => (
           <ClothCard
