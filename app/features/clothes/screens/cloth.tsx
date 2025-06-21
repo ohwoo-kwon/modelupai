@@ -86,11 +86,33 @@ export const action = async ({ request }: Route.ActionArgs) => {
     ],
   });
 
+  const personRes = await openai.responses.create({
+    model: "gpt-4.1-nano",
+    input: [
+      {
+        role: "user",
+        content: [
+          {
+            type: "input_text",
+            text: "Describe about the person. Output must be start with 'The person is' and just decribe about the person. Don't describe the cloth or background etc.",
+          },
+          {
+            type: "input_image",
+            image_url: `data:${validData.image.type};base64,${imageBuffer}`,
+            detail: "high",
+          },
+        ],
+      },
+    ],
+  });
+
   const replicate = new Replicate();
 
   const input = {
-    prompt: `Combine these photos into one fluid scene. Make the person in the first image wear the cloth that ${clothRes.output_text}. Keep the person except the cloth.`,
-    aspect_ratio: "1:1",
+    prompt: `Me: ${personRes.output_text}
+    Fitting cloth: ${clothRes.output_text}
+    Make me wears the fitting cloth. I want to take off my cloth. Keep everything except my cloth. Keey my pose, face etc.`,
+    aspect_ratio: "3:4",
     input_images: [
       `data:${validData.image.type};base64,${imageBuffer}`,
       validData.clothImgUrl,
