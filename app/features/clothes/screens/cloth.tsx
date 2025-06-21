@@ -1,7 +1,6 @@
 import type { Route } from "./+types/cloth";
 
 import { DateTime } from "luxon";
-import OpenAI from "openai";
 import { Form, Link, data } from "react-router";
 import Replicate from "replicate";
 import { z } from "zod";
@@ -66,24 +65,8 @@ export const action = async ({ request }: Route.ActionArgs) => {
   if (!success)
     return data({ fieldErrors: error.flatten().fieldErrors }, { status: 400 });
 
-  const startDate = DateTime.now().startOf("day").toISO();
-  const endDate = DateTime.now().endOf("day").toISO();
-
-  const makeImageCount = await getMakeImageCount(client, {
-    profileId: user.id,
-    startDate,
-    endDate,
-  });
-  if (makeImageCount && makeImageCount > 2) {
-    return data({ error: "일일 사용 제한을 초과했습니다" }, { status: 400 });
-  }
-
   const imageBuffer = await fileToBase64(validData.image);
 
-  // const openai = new OpenAI({
-  //   apiKey: process.env.OPEN_AI_API_KEY || "",
-  //   baseURL: "https://api.openai.com/v1",
-  // });
   const replicate = new Replicate();
 
   const input = {
@@ -99,72 +82,6 @@ export const action = async ({ request }: Route.ActionArgs) => {
   );
 
   const imageUrl = await streamToBase64(output as ReadableStream);
-
-  // const response = await openai.responses.create({
-  //   model: "gpt-4.1",
-  //   input: [
-  //     {
-  //       role: "user",
-  //       content: [
-  //         {
-  //           type: "input_text",
-  //           text: "Replace the outfit of the model in the photo with a new outfit.",
-  //           //             `Keep the person's original face and body shape exactly the same. Change only the clothes. Do not alter the skin tone, facial structure, or proportions
-
-  //           // Clothing Reference (First Image): Use this outfit as-is, including fabric, design, color, texture, and fit.
-  //           // Model Reference (Second Image): DO NOT change the model’s pose, face, lighting, body shape, background, or proportions. Only modify the outfit.
-
-  //           // Overlay the clothing from the first image onto the model in the second image as if the person is realistically wearing it.
-
-  //           // Positive Prompt:
-  //           // A realistic, high-quality photo of the model wearing the exact clothes from the first image. The clothing is naturally fitted to the model’s body. Details such as fabric folds, textures, color accuracy, and pattern alignment are preserved. The lighting, shadows, and angles match the original model photo to ensure seamless integration.
-
-  //           // Negative Prompt:
-  //           // blurry, poorly fitted clothes, wrong outfit, incorrect fabric, low-resolution textures, mismatched colors, deformed limbs, distorted face, added or missing body parts, unnatural pose, inconsistent lighting, unrealistic blending, bad anatomy, outfit artifacts.`,
-  //         },
-  //         {
-  //           type: "input_image",
-  //           image_url: validData.clothImgUrl,
-  //           detail: "high",
-  //         },
-  //         {
-  //           type: "input_image",
-  //           image_url: `data:${validData.image.type};base64,${imageBuffer}`,
-  //           detail: "high",
-  //         },
-  //       ],
-  //     },
-  //   ],
-  //   tools: [
-  //     {
-  //       type: "image_generation",
-  //       quality: "high",
-  //       model: "gpt-image-1",
-  //       size: "1024x1536",
-  //       output_format: "png",
-  //     },
-  //   ],
-  // });
-
-  // console.log(response.usage?.input_tokens);
-  // console.log(response.usage?.output_tokens);
-
-  // if (response.error)
-  //   return data(
-  //     { error: `${response.error.code}: ${response.error.message}` },
-  //     { status: 400 },
-  //   );
-
-  // const imageData = response.output
-  //   .filter((output) => output.type === "image_generation_call")
-  //   .map((output) => output.result);
-
-  // const imageBase64 = imageData[0];
-  // if (!imageBase64)
-  //   return data(
-  //     { error: "이미지 생성에 실패했습니다. 잠시 후 다시 시도해주세요." },
-  //     { status: 400 },
-  //   );
 
   const resultImageBuffer = Buffer.from(imageUrl, "base64");
 
