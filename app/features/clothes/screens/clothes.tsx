@@ -1,7 +1,7 @@
 import type { Route } from "./+types/clothes";
 
 import { SearchIcon } from "lucide-react";
-import { Suspense, useRef } from "react";
+import { type MouseEvent, Suspense, useRef } from "react";
 import { Await, useSearchParams } from "react-router";
 import { z } from "zod";
 
@@ -12,15 +12,27 @@ import { Input } from "~/core/components/ui/input";
 import makeServerClient from "~/core/lib/supa-client.server";
 
 import ClothCard from "../components/cloth-card";
+import { clothingCategoryObject } from "../constants";
 import { getClothes, getClothesPage } from "../queries";
+import { clothingCategoryEnum } from "../schema";
 
 export const meta: Route.MetaFunction = () => {
   return [{ title: `옷 | ${import.meta.env.VITE_APP_NAME} 가상 피팅` }];
 };
 
 const searchParamsSchema = z.object({
-  page: z.coerce.number().default(1),
+  page: z.coerce
+    .number()
+    .default(1)
+    .superRefine((value, ctx) => {
+      if (value < 1)
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "page 는 1 이상의 값이어야 합니다.",
+        });
+    }),
   search: z.string().optional(),
+  category: z.enum(clothingCategoryEnum.enumValues).optional(),
 });
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
@@ -36,10 +48,10 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
 
   if (!success) throw error;
 
-  const { page, search } = searchParamsData;
+  const { page, search, category } = searchParamsData;
 
-  const clothes = getClothes(client, { page, search });
-  const totalPages = await getClothesPage(client, { search });
+  const clothes = getClothes(client, { page, search, category });
+  const totalPages = await getClothesPage(client, { search, category });
 
   return { clothes, totalPages };
 };
@@ -49,9 +61,22 @@ export default function Clothes({ loaderData }: Route.ComponentProps) {
   const [searchParams, setSearchParams] = useSearchParams();
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const search = searchParams.get("search");
+
   const handleClickSearch = () => {
     if (!inputRef.current) return;
-    setSearchParams({ search: inputRef.current.value });
+    searchParams.delete("page");
+    searchParams.set("search", inputRef.current.value);
+    setSearchParams(searchParams);
+  };
+
+  const handleCategoryClick = (e: MouseEvent<HTMLButtonElement>) => {
+    const {
+      currentTarget: { value },
+    } = e;
+    searchParams.delete("page");
+    searchParams.set("category", value);
+    setSearchParams(searchParams);
   };
 
   return (
@@ -74,6 +99,7 @@ export default function Clothes({ loaderData }: Route.ComponentProps) {
           <Input
             ref={inputRef}
             placeholder="원하는 옷을 검색해보세요..."
+            defaultValue={search || ""}
             className="bg-background"
           />
           <Button
@@ -83,6 +109,19 @@ export default function Clothes({ loaderData }: Route.ComponentProps) {
           >
             <SearchIcon />
           </Button>
+        </div>
+        <div className="flex gap-2">
+          {clothingCategoryEnum.enumValues.map((category) => (
+            <Button
+              key={category}
+              size="sm"
+              variant="outline"
+              onClick={handleCategoryClick}
+              value={category}
+            >
+              {clothingCategoryObject[category]}
+            </Button>
+          ))}
         </div>
       </Card>
       <div className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-4">

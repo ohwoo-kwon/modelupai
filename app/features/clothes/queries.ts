@@ -1,11 +1,21 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "database.types";
 
+import type { clothingCategoryEnum } from "./schema";
+
 const PAGE_SIZE = 20;
 
 export const getClothes = async (
   client: SupabaseClient<Database>,
-  { page, search }: { page: number; search?: string },
+  {
+    page,
+    search,
+    category,
+  }: {
+    page: number;
+    search?: string;
+    category?: (typeof clothingCategoryEnum.enumValues)[number];
+  },
 ) => {
   const baseQuery = client
     .from("clothes")
@@ -14,6 +24,7 @@ export const getClothes = async (
     .order("created_at", { ascending: false });
 
   if (search) baseQuery.like("name", `%${search}%`);
+  if (category) baseQuery.eq("category", category);
   const { data, error } = await baseQuery;
   if (error) throw Error(error.message);
   return data;
@@ -21,13 +32,20 @@ export const getClothes = async (
 
 export const getClothesPage = async (
   client: SupabaseClient<Database>,
-  { search }: { search?: string },
+  {
+    search,
+    category,
+  }: {
+    search?: string;
+    category?: (typeof clothingCategoryEnum.enumValues)[number];
+  },
 ) => {
   const baseQuery = client
     .from("clothes")
     .select("cloth_id", { count: "exact", head: true });
 
   if (search) baseQuery.like("name", `%${search}%`);
+  if (category) baseQuery.eq("category", category);
 
   const { count, error: countError } = await baseQuery;
 
