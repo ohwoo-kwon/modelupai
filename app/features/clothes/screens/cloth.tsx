@@ -119,13 +119,6 @@ export const action = async ({ request }: Route.ActionArgs) => {
     ],
   };
 
-  // const input = {
-  //   prompt: `Put the person into the cloth in other image. Just change the outfit of people.`,
-  //   aspect_ratio: "1:1",
-  //   input_image_1: `data:${validData.image.type};base64,${imageBuffer}`,
-  //   input_image_2: validData.clothImgUrl,
-  // };
-
   const output = await replicate.run("flux-kontext-apps/multi-image-list", {
     input,
   });
@@ -235,7 +228,7 @@ export default function Cloth({
               참고용으로만 사용해 주세요.
             </p>
             <p className="text-muted-foreground mt-4 max-w-96 text-xs">
-              ⏰ 이미지 생성에 약 10초 소요됩니다.
+              ⏰ 이미지 생성에 약 30초 소요됩니다.
             </p>
           </div>
           {actionData && "imageData" in actionData && actionData.imageData && (

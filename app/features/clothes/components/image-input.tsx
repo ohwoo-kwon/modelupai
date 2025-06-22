@@ -77,6 +77,7 @@ export default function ImageInput({ errors }: { errors: string[] | null }) {
         name="image"
         type="file"
         className="hidden"
+        accept="image/*"
         ref={inputRef}
         onChange={onChangeImage}
       />
