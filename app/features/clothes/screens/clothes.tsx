@@ -138,15 +138,21 @@ export default function Clothes({ loaderData }: Route.ComponentProps) {
           <Await
             resolve={clothes}
             children={(clothes) =>
-              clothes.map(({ cloth_id, name, category, image_url }) => (
-                <ClothCard
-                  key={`cloth_${cloth_id}`}
-                  clothId={cloth_id}
-                  imgUrl={image_url}
-                  name={name}
-                  category={category}
-                />
-              ))
+              clothes.length > 0 ? (
+                clothes.map(({ cloth_id, name, category, image_url }) => (
+                  <ClothCard
+                    key={`cloth_${cloth_id}`}
+                    clothId={cloth_id}
+                    imgUrl={image_url}
+                    name={name}
+                    category={category}
+                  />
+                ))
+              ) : (
+                <div className="text-center text-xl">
+                  상품 준비 중 입니다...
+                </div>
+              )
             }
           ></Await>
         </Suspense>
