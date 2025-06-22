@@ -283,7 +283,7 @@ export default function Cloth({
                   </DialogDescription>
                 </DialogHeader>
                 <img
-                  className="mx-auto max-w-96 rounded border"
+                  className="mx-auto w-full max-w-96 rounded border"
                   src={actionData.imageData}
                   alt="결과 이미지"
                 />
