@@ -1,10 +1,14 @@
 import type { Route } from "./+types/clothes";
 
-import { Suspense } from "react";
-import { Await } from "react-router";
+import { SearchIcon } from "lucide-react";
+import { Suspense, useRef } from "react";
+import { Await, useSearchParams } from "react-router";
 import { z } from "zod";
 
 import CustomPagination from "~/core/components/custom-pagination";
+import { Button } from "~/core/components/ui/button";
+import { Card } from "~/core/components/ui/card";
+import { Input } from "~/core/components/ui/input";
 import makeServerClient from "~/core/lib/supa-client.server";
 
 import ClothCard from "../components/cloth-card";
@@ -16,6 +20,7 @@ export const meta: Route.MetaFunction = () => {
 
 const searchParamsSchema = z.object({
   page: z.coerce.number().default(1),
+  search: z.string().optional(),
 });
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
@@ -31,16 +36,24 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
 
   if (!success) throw error;
 
-  const { page } = searchParamsData;
+  const { page, search } = searchParamsData;
 
-  const clothes = getClothes(client, { page });
-  const totalPages = await getClothesPage(client);
+  const clothes = getClothes(client, { page, search });
+  const totalPages = await getClothesPage(client, { search });
 
   return { clothes, totalPages };
 };
 
 export default function Clothes({ loaderData }: Route.ComponentProps) {
-  const { clothes } = loaderData;
+  const { clothes, totalPages } = loaderData;
+  const [searchParams, setSearchParams] = useSearchParams();
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleClickSearch = () => {
+    if (!inputRef.current) return;
+    setSearchParams({ search: inputRef.current.value });
+  };
+
   return (
     <div className="space-y-10 px-5">
       <div className="flex flex-col items-center gap-2">
@@ -56,6 +69,22 @@ export default function Clothes({ loaderData }: Route.ComponentProps) {
           <Link to="/clothes/create">피팅하고 싶은 옷 추가</Link>
         </Button>
       </div> */}
+      <Card className="bg-accent px-8 shadow-none">
+        <div className="relative">
+          <Input
+            ref={inputRef}
+            placeholder="원하는 옷을 검색해보세요..."
+            className="bg-background"
+          />
+          <Button
+            className="absolute top-1 right-1 size-7"
+            size="icon"
+            onClick={handleClickSearch}
+          >
+            <SearchIcon />
+          </Button>
+        </div>
+      </Card>
       <div className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-4">
         <Suspense
           fallback={
@@ -83,7 +112,7 @@ export default function Clothes({ loaderData }: Route.ComponentProps) {
           ></Await>
         </Suspense>
       </div>
-      <CustomPagination totalPages={loaderData.totalPages} />
+      <CustomPagination totalPages={totalPages} />
     </div>
   );
 }

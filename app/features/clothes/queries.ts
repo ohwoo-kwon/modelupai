@@ -5,21 +5,32 @@ const PAGE_SIZE = 20;
 
 export const getClothes = async (
   client: SupabaseClient<Database>,
-  { page }: { page: number },
+  { page, search }: { page: number; search?: string },
 ) => {
-  const { data, error } = await client
+  const baseQuery = client
     .from("clothes")
     .select("*")
     .range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1)
     .order("created_at", { ascending: false });
+
+  if (search) baseQuery.like("name", `%${search}%`);
+  const { data, error } = await baseQuery;
   if (error) throw Error(error.message);
   return data;
 };
 
-export const getClothesPage = async (client: SupabaseClient<Database>) => {
-  const { count, error: countError } = await client
+export const getClothesPage = async (
+  client: SupabaseClient<Database>,
+  { search }: { search?: string },
+) => {
+  const baseQuery = client
     .from("clothes")
     .select("cloth_id", { count: "exact", head: true });
+
+  if (search) baseQuery.like("name", `%${search}%`);
+
+  const { count, error: countError } = await baseQuery;
+
   if (countError) throw Error(countError.message);
   if (!count) return 1;
   return Math.ceil(count / PAGE_SIZE);
