@@ -1,10 +1,28 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "database.types";
 
-export const getClothes = async (client: SupabaseClient<Database>) => {
-  const { data, error } = await client.from("clothes").select("*");
-  if (error) throw error;
+const PAGE_SIZE = 20;
+
+export const getClothes = async (
+  client: SupabaseClient<Database>,
+  { page }: { page: number },
+) => {
+  const { data, error } = await client
+    .from("clothes")
+    .select("*")
+    .range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1)
+    .order("created_at", { ascending: false });
+  if (error) throw Error(error.message);
   return data;
+};
+
+export const getClothesPage = async (client: SupabaseClient<Database>) => {
+  const { count, error: countError } = await client
+    .from("clothes")
+    .select("cloth_id", { count: "exact", head: true });
+  if (countError) throw Error(countError.message);
+  if (!count) return 1;
+  return Math.ceil(count / PAGE_SIZE);
 };
 
 export const getClotheById = async (

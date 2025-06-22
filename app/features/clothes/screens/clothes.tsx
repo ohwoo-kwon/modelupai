@@ -2,22 +2,41 @@ import type { Route } from "./+types/clothes";
 
 import { Suspense } from "react";
 import { Await } from "react-router";
+import { z } from "zod";
 
+import CustomPagination from "~/core/components/custom-pagination";
 import makeServerClient from "~/core/lib/supa-client.server";
 
 import ClothCard from "../components/cloth-card";
-import { getClothes } from "../queries";
+import { getClothes, getClothesPage } from "../queries";
 
 export const meta: Route.MetaFunction = () => {
   return [{ title: `옷 | ${import.meta.env.VITE_APP_NAME} 가상 피팅` }];
 };
 
+const searchParamsSchema = z.object({
+  page: z.coerce.number().default(1),
+});
+
 export const loader = async ({ request }: Route.LoaderArgs) => {
   const [client] = makeServerClient(request);
 
-  const clothes = getClothes(client);
+  const {
+    data: searchParamsData,
+    success,
+    error,
+  } = searchParamsSchema.safeParse(
+    Object.fromEntries(new URL(request.url).searchParams),
+  );
 
-  return { clothes };
+  if (!success) throw error;
+
+  const { page } = searchParamsData;
+
+  const clothes = getClothes(client, { page });
+  const totalPages = await getClothesPage(client);
+
+  return { clothes, totalPages };
 };
 
 export default function Clothes({ loaderData }: Route.ComponentProps) {
@@ -64,6 +83,7 @@ export default function Clothes({ loaderData }: Route.ComponentProps) {
           ></Await>
         </Suspense>
       </div>
+      <CustomPagination totalPages={loaderData.totalPages} />
     </div>
   );
 }

@@ -242,7 +242,12 @@ export default function Cloth({
               <div className="bg-muted space-y-2 rounded p-2">
                 <p className="max-w-96 text-xs">👤 인물 사진 촬영 가이드</p>
                 <p className="ml-4 max-w-96 text-xs">
-                  • 정면을 바라보는 상반신 사진이 가장 이상적입니다.
+                  • 입고자 하는 상품에 따라 사진의 형태가 달라집니다.
+                  <br /> (예시: 상의 - 상반신/전신, 하의 - 하반신/전신, 원피스 -
+                  전신)
+                </p>
+                <p className="ml-4 max-w-96 text-xs">
+                  • 인물 중심의 사진이 정확도가 높습니다.
                 </p>
                 <p className="ml-4 max-w-96 text-xs">
                   • 얼굴의 이목구비가 뚜렷하게 보일수록 인물 생성이 정확합니다.

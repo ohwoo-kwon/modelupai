@@ -16,7 +16,7 @@ export default function ClothCard({
   return (
     <Link
       to={`/clothes/${clothId}`}
-      className="flex h-fit flex-col rounded border transition-transform duration-300"
+      className="flex h-full flex-col rounded border transition-transform duration-300"
     >
       <img
         className="w-full object-cover"
