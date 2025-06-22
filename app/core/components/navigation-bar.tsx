@@ -18,6 +18,7 @@ import {
   SheetContent,
   SheetFooter,
   SheetHeader,
+  SheetTitle,
   SheetTrigger,
 } from "./ui/sheet";
 
@@ -164,6 +165,7 @@ export default function NavigationBar({
         </SheetTrigger>
         <SheetContent>
           <SheetHeader>
+            <SheetTitle></SheetTitle>
             <MenuButtons />
           </SheetHeader>
           <SheetFooter>
