@@ -49,14 +49,23 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="google-adsense-account" content="ca-pub-1792324013654410" />
         <Meta />
         <Links />
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1792324013654410"
+          crossOrigin="anonymous"
+        />
       </head>
       <body>
         {children}
         <ScrollRestoration />
         <Scripts />
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-HZS8YQ6SMS"></script>
+        <script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=G-HZS8YQ6SMS"
+        ></script>
         <script
           dangerouslySetInnerHTML={{
             __html: `window.dataLayer = window.dataLayer || [];
