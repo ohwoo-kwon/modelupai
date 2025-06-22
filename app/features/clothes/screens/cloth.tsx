@@ -2,7 +2,7 @@ import type { Route } from "./+types/cloth";
 
 import { Loader2Icon } from "lucide-react";
 import OpenAI from "openai";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Form, data, useNavigation } from "react-router";
 import Replicate from "replicate";
 import { z } from "zod";
@@ -10,6 +10,13 @@ import { z } from "zod";
 import FormErrors from "~/core/components/form-errors";
 import { Button } from "~/core/components/ui/button";
 import { Card } from "~/core/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "~/core/components/ui/dialog";
 import makeServerClient from "~/core/lib/supa-client.server";
 import { fileToBase64, streamToBase64 } from "~/core/lib/utils";
 
@@ -20,8 +27,10 @@ import { getClotheById, getMakeImageCount } from "../queries";
 
 export const meta: Route.MetaFunction = ({ data }) => {
   return [
-    { title: `${data?.cloth.name} | ${import.meta.env.VITE_APP_NAME}` },
-    { name: "description", content: data?.cloth.name },
+    {
+      title: `${data?.cloth.name} | ${import.meta.env.VITE_APP_NAME} 가상 피팅`,
+    },
+    { name: "description", content: `${data?.cloth.name} 가상 피팅 해보기` },
   ];
 };
 
@@ -40,7 +49,14 @@ export const loader = async ({ request, params }: Route.LoaderArgs) => {
 };
 
 const formSchema = z.object({
-  image: z.instanceof(File),
+  image: z.instanceof(File).superRefine((file, ctx) => {
+    if (!file || file.size === 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "사진을 업로드 해주세요.",
+      });
+    }
+  }),
   clothImgUrl: z.string(),
   clothId: z.coerce.number(),
 });
@@ -66,45 +82,52 @@ export const action = async ({ request }: Route.ActionArgs) => {
 
   const openai = new OpenAI({ apiKey: process.env.OPEN_AI_API_KEY });
 
-  const clothRes = await openai.responses.create({
-    model: "gpt-4.1-nano",
-    input: [
-      {
-        role: "user",
-        content: [
-          {
-            type: "input_text",
-            text: "Describe about the cloth. Output must be start with 'The cloth is' and just decribe about the cloth.",
-          },
-          {
-            type: "input_image",
-            image_url: validData.clothImgUrl,
-            detail: "high",
-          },
-        ],
-      },
-    ],
-  });
+  const [clothRes, personRes] = await Promise.all([
+    openai.responses.create({
+      model: "gpt-4.1-nano",
+      input: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "input_text",
+              text: "Describe about the cloth. Output must be start with 'The cloth is' and just decribe about the cloth.",
+            },
+            {
+              type: "input_image",
+              image_url: validData.clothImgUrl,
+              detail: "high",
+            },
+          ],
+        },
+      ],
+    }),
+    openai.responses.create({
+      model: "gpt-4.1-nano",
+      input: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "input_text",
+              text: "Describe about the person. Output must be start with 'The person is' and just decribe about the person. Don't describe the cloth or background etc.",
+            },
+            {
+              type: "input_image",
+              image_url: `data:${validData.image.type};base64,${imageBuffer}`,
+              detail: "high",
+            },
+          ],
+        },
+      ],
+    }),
+  ]);
 
-  const personRes = await openai.responses.create({
-    model: "gpt-4.1-nano",
-    input: [
-      {
-        role: "user",
-        content: [
-          {
-            type: "input_text",
-            text: "Describe about the person. Output must be start with 'The person is' and just decribe about the person. Don't describe the cloth or background etc.",
-          },
-          {
-            type: "input_image",
-            image_url: `data:${validData.image.type};base64,${imageBuffer}`,
-            detail: "high",
-          },
-        ],
-      },
-    ],
-  });
+  if (clothRes.error || personRes.error)
+    return data(
+      { error: clothRes.error?.message || personRes.error?.message },
+      { status: 400 },
+    );
 
   const replicate = new Replicate();
 
@@ -162,19 +185,29 @@ export default function Cloth({
 
   const submitting = navigation.state === "submitting";
 
+  const [dialogOpen, setDialogOpen] = useState(false);
+
   useEffect(() => {
     if (submitting) window.open(cloth.shopping_url, "blank");
   }, [submitting]);
 
+  useEffect(() => {
+    if (actionData && "imageData" in actionData && actionData.imageData)
+      setDialogOpen(true);
+  }, [actionData]);
+
   return (
     <div className="space-y-10 px-5">
       <div className="flex flex-col items-center gap-2">
-        <h1 className="text-xl font-bold md:text-2xl">{cloth.name}</h1>
-        <h3 className="text-center md:text-lg">
-          {clothingCategoryObject[cloth.category]}
-        </h3>
+        <h1 className="text-xl font-bold md:text-2xl">🤖 AI 가상 피팅 체험</h1>
       </div>
-      <Card className="mx-auto w-fit max-w-screen-md px-8">
+      <Card className="mx-auto flex w-full items-center px-8">
+        <div>
+          <h3 className="text-muted-foreground text-sm md:text-base">
+            {clothingCategoryObject[cloth.category]}
+          </h3>
+          <h3 className="text-center font-semibold md:text-lg">{cloth.name}</h3>
+        </div>
         <Form method="POST" className="space-y-4" encType="multipart/form-data">
           <input type="hidden" name="clothId" defaultValue={cloth.cloth_id} />
           <input
@@ -182,66 +215,77 @@ export default function Cloth({
             name="clothImgUrl"
             defaultValue={cloth.image_url}
           />
-          <div className="space-y-1">
-            <h5 className="font-bold">옷 사진</h5>
-            <img
-              src={cloth.image_url}
-              alt={cloth.name}
-              className="mx-auto w-full max-w-96 rounded border"
-            />
-            {cloth.shopping_url.startsWith("https://link.coupang.com/") && (
-              <p className="text-muted-foreground max-w-96 text-xs">
-                "이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의
-                수수료를 제공받습니다."
+          <div className="gap-10 space-y-4 lg:flex lg:justify-center">
+            <div className="space-y-1">
+              <img
+                src={cloth.image_url}
+                alt={cloth.name}
+                className="mx-auto w-full max-w-96 rounded border"
+              />
+              {cloth.shopping_url.startsWith("https://link.coupang.com/") && (
+                <p className="text-muted-foreground max-w-96 text-xs">
+                  "이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의
+                  수수료를 제공받습니다."
+                </p>
+              )}
+            </div>
+            <div className="space-y-1">
+              <ImageInput
+                errors={
+                  actionData &&
+                  "fieldErrors" in actionData &&
+                  actionData.fieldErrors.image
+                    ? actionData.fieldErrors.image
+                    : null
+                }
+              />
+              <div className="bg-muted space-y-2 rounded p-2">
+                <p className="max-w-96 text-xs">👤 인물 사진 촬영 가이드</p>
+                <p className="ml-4 max-w-96 text-xs">
+                  • 정면을 바라보는 상반신 사진이 가장 이상적입니다.
+                </p>
+                <p className="ml-4 max-w-96 text-xs">
+                  • 얼굴의 이목구비가 뚜렷하게 보일수록 인물 생성이 정확합니다.
+                </p>
+                <p className="ml-4 max-w-96 text-xs">
+                  • 밝고 균일한 조명, 단순한 배경에서 촬영하면 정확도가
+                  올라갑니다.
+                </p>
+                <p className="ml-4 max-w-96 text-xs">
+                  • 흐릿하거나 픽셀이 깨진 저화질 사진은 사용을 권장하지
+                  않습니다.
+                </p>
+              </div>
+              <p className="mt-4 max-w-96 bg-yellow-300/30 p-2 text-xs">
+                ⚠️ 본 이미지는 AI를 활용해 생성된 이미지로, 실제 인물이 해당
+                의상을 착용한 모습과는 차이가 있을 수 있습니다. 착용 이미지는
+                참고용으로만 사용해 주세요.
               </p>
-            )}
-          </div>
-          <div className="space-y-1">
-            <h5 className="font-bold">내 사진</h5>
-            <ImageInput
-              errors={
-                actionData &&
-                "fieldErrors" in actionData &&
-                actionData.fieldErrors.image
-                  ? actionData.fieldErrors.image
-                  : null
-              }
-            />
-            <p className="text-muted-foreground max-w-96 text-xs">
-              👤 인물 사진 촬영 가이드
-            </p>
-            <p className="text-muted-foreground ml-4 max-w-96 text-xs">
-              • 정면을 바라보는 상반신 사진이 가장 이상적입니다.
-            </p>
-            <p className="text-muted-foreground ml-4 max-w-96 text-xs">
-              • 얼굴의 이목구비가 뚜렷하게 보일수록 인물 생성이 정확합니다.
-            </p>
-            <p className="text-muted-foreground ml-4 max-w-96 text-xs">
-              • 밝고 균일한 조명, 단순한 배경에서 촬영하면 정확도가 올라갑니다.
-            </p>
-            <p className="text-muted-foreground ml-4 max-w-96 text-xs">
-              • 흐릿하거나 픽셀이 깨진 저화질 사진은 사용을 권장하지 않습니다.
-            </p>
-            <p className="text-muted-foreground mt-4 max-w-96 text-xs">
-              ⚠️ 본 이미지는 AI를 활용해 생성된 이미지로, 실제 인물이 해당
-              의상을 착용한 모습과는 차이가 있을 수 있습니다. 착용 이미지는
-              참고용으로만 사용해 주세요.
-            </p>
-            <p className="text-muted-foreground mt-4 max-w-96 text-xs">
-              ⏰ 이미지 생성에 약 30초 소요됩니다.
-            </p>
+              <p className="mt-4 max-w-96 bg-blue-300/30 p-2 text-xs">
+                ⏰ 이미지 생성에 약 30초 소요됩니다.
+              </p>
+            </div>
           </div>
           {actionData && "imageData" in actionData && actionData.imageData && (
-            <div className="space-y-1">
-              <h5 className="font-bold">결과</h5>
-              <img
-                className="mx-auto max-w-96 rounded border"
-                src={actionData.imageData}
-                alt="결과 이미지"
-              />
-            </div>
+            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>AI 가상 피팅 결과</DialogTitle>
+                  <DialogDescription>
+                    ⚠️ 본 이미지는 AI를 활용해 생성된 이미지로, 실제 인물이 해당
+                    의상을 착용한 모습과는 차이가 있을 수 있습니다. 착용
+                    이미지는 참고용으로만 사용해 주세요.
+                  </DialogDescription>
+                </DialogHeader>
+                <img
+                  className="mx-auto max-w-96 rounded border"
+                  src={actionData.imageData}
+                  alt="결과 이미지"
+                />
+              </DialogContent>
+            </Dialog>
           )}
-          <div className="space-y-2">
+          <div className="space-y-2 lg:self-end">
             {actionData && "error" in actionData && actionData.error ? (
               <FormErrors errors={[actionData.error]} />
             ) : null}

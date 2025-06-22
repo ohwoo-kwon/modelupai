@@ -18,7 +18,12 @@ export default function ClothCard({
       to={`/clothes/${clothId}`}
       className="flex h-fit flex-col rounded border transition-transform duration-300"
     >
-      <img className="w-full object-cover" src={imgUrl} alt={name} />
+      <img
+        className="w-full object-cover"
+        src={imgUrl}
+        alt={name}
+        loading="lazy"
+      />
       <div className="flex items-center justify-between px-4 py-2">
         <div className="flex flex-col">
           <h3 className="text-lg font-bold">{name}</h3>

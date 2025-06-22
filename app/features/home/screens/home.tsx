@@ -6,10 +6,10 @@ import { Button } from "~/core/components/ui/button";
 
 export const meta: Route.MetaFunction = () => {
   return [
-    { title: import.meta.env.VITE_APP_NAME },
+    { title: `AI 가상 피팅 | ${import.meta.env.VITE_APP_NAME} 가상 피팅` },
     {
       name: "description",
-      content: "가상 AI 피팅 서비스를 무료로 즐길 수 있는 Fit Me Ai 입니다.",
+      content: "AI 가상 피팅 서비스를 무료로 즐길 수 있는 Fit Me Ai 입니다.",
     },
   ];
 };
@@ -27,9 +27,7 @@ export default function Home() {
             <h3 className="text-2xl">
               실제 구매 전 나에게 어떻게 맞는지 미리 확인하세요.
             </h3>
-            <h3 className="text-2xl">
-              첨단 AI 기술로 가상 피팅을 경험할 수 있습니다.
-            </h3>
+            <h3 className="text-2xl">AI 가상 피팅을 경험할 수 있습니다.</h3>
           </div>
           <Button size="lg" className="p-10 text-xl" asChild>
             <Link to="/clothes">지금 시작하기</Link>
@@ -90,7 +88,9 @@ export default function Home() {
           <h1 className="text-5xl font-bold">
             {import.meta.env.VITE_APP_NAME} 사용방법
           </h1>
-          <h3 className="text-2xl">3단계로 간단하게 가상 피팅을 경험하세요.</h3>
+          <h3 className="text-2xl">
+            3단계로 간단하게 AI 가상 피팅을 경험하세요.
+          </h3>
           <div className="grid grid-cols-1 items-center gap-10 md:grid-cols-2 xl:grid-cols-3">
             <div className="mx-auto w-84 space-y-2">
               <img src={"/images/cloth.png"} className="w-84" />

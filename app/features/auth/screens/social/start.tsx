@@ -8,7 +8,7 @@ import makeServerClient from "~/core/lib/supa-client.server";
 export const meta: Route.MetaFunction = () => {
   return [
     {
-      title: `소셜 로그인 시작 | ${import.meta.env.VITE_APP_NAME}`,
+      title: `소셜 로그인 시작 | ${import.meta.env.VITE_APP_NAME} 가상 피팅`,
     },
   ];
 };

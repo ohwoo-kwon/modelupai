@@ -18,7 +18,9 @@ import { getModelById } from "../queries";
 
 export const meta: Route.MetaFunction = ({ data }) => {
   return [
-    { title: `${data?.model.name} | ${import.meta.env.VITE_APP_NAME}` },
+    {
+      title: `${data?.model.name} | ${import.meta.env.VITE_APP_NAME} 가상 피팅`,
+    },
     {
       name: "description",
       content: `${data?.model.name}, ${data?.model.description}, ${data?.model.gender}, ${data?.model.age_range}, ${data?.model.body_type}, ${data?.model.race}, ${data?.model.style}, ${data?.model.prompt}`,

@@ -12,7 +12,7 @@ import EditProfileForm from "../components/edit-profile-form";
 import { getUserProfile } from "../queries";
 
 export const meta: Route.MetaFunction = () => {
-  return [{ title: `마이페이지 | ${import.meta.env.VITE_APP_NAME}` }];
+  return [{ title: `마이페이지 | ${import.meta.env.VITE_APP_NAME} 가상 피팅` }];
 };
 
 export async function loader({ request }: Route.LoaderArgs) {

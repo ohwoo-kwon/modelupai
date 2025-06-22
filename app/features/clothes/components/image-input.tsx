@@ -61,7 +61,7 @@ export default function ImageInput({ errors }: { errors: string[] | null }) {
           <img className="object-fit w-full" src={image} />
         ) : (
           <div className="space-y-1 text-center">
-            <ImageIcon size={50} className="mx-auto" />
+            <p className="text-5xl">📷</p>
             <p>드래그 & 드롭 가능</p>
             <p>CTRL+C, CTRL+V 가능</p>
           </div>
