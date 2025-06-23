@@ -134,7 +134,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
   const input = {
     prompt: `Me: ${personRes.output_text}
     Fitting cloth: ${clothRes.output_text}
-    Make me wears the Fitting cloth. I want to take off my cloth. Keep everything same in my image except my cloth. Change my cloth only.`,
+    Make me wears the Fitting cloth. I want to take off my cloth and change the cloth to the garment. Keep everything same in my image except my cloth. Change my cloth only.`,
     aspect_ratio: "3:4",
     input_images: [
       `data:${validData.image.type};base64,${imageBuffer}`,
