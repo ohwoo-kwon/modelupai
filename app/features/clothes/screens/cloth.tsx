@@ -110,7 +110,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
           content: [
             {
               type: "input_text",
-              text: "Describe about the person. Output must be start with 'The person is' and just decribe about the person. Don't describe the cloth or background etc.",
+              text: "Describe about the person. Output must be start with 'The person is' and just decribe about the person and background.",
             },
             {
               type: "input_image",
@@ -134,7 +134,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
   const input = {
     prompt: `Me: ${personRes.output_text}
     Fitting cloth: ${clothRes.output_text}
-    Make me wears the fitting cloth. I want to take off my cloth. Keep everything except my cloth. Keey my pose, face etc.`,
+    Make me wears the Fitting cloth. I want to take off my cloth. Keep everything same in my image except my cloth. Change my cloth only.`,
     aspect_ratio: "3:4",
     input_images: [
       `data:${validData.image.type};base64,${imageBuffer}`,
@@ -145,6 +145,17 @@ export const action = async ({ request }: Route.ActionArgs) => {
   const output = await replicate.run("flux-kontext-apps/multi-image-list", {
     input,
   });
+
+  // const input = {
+  //   part: "upper_body",
+  //   image: `data:${validData.image.type};base64,${imageBuffer}`,
+  //   garment: validData.clothImgUrl,
+  // };
+
+  // const output = await replicate.run(
+  //   "subhash25rawat/flux-vton:a02643ce418c0e12bad371c4adbfaec0dd1cb34b034ef37650ef205f92ad6199",
+  //   { input },
+  // );
 
   const imageUrl = await streamToBase64(output as ReadableStream);
 
