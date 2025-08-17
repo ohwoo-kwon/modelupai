@@ -80,69 +80,68 @@ export const action = async ({ request }: Route.ActionArgs) => {
 
   const imageBuffer = await fileToBase64(validData.image);
 
-  const openai = new OpenAI({ apiKey: process.env.OPEN_AI_API_KEY });
+  // const openai = new OpenAI({ apiKey: process.env.OPEN_AI_API_KEY });
 
-  const [clothRes, personRes] = await Promise.all([
-    openai.responses.create({
-      model: "gpt-4.1-nano",
-      input: [
-        {
-          role: "user",
-          content: [
-            {
-              type: "input_text",
-              text: "Describe about the cloth. Output must be start with 'The cloth is' and just decribe about the cloth.",
-            },
-            {
-              type: "input_image",
-              image_url: validData.clothImgUrl,
-              detail: "high",
-            },
-          ],
-        },
-      ],
-    }),
-    openai.responses.create({
-      model: "gpt-4.1-nano",
-      input: [
-        {
-          role: "user",
-          content: [
-            {
-              type: "input_text",
-              text: "Describe about the person. Output must be start with 'The person is' and just decribe about the person and background.",
-            },
-            {
-              type: "input_image",
-              image_url: `data:${validData.image.type};base64,${imageBuffer}`,
-              detail: "high",
-            },
-          ],
-        },
-      ],
-    }),
-  ]);
+  // const [clothRes, personRes] = await Promise.all([
+  //   openai.responses.create({
+  //     model: "gpt-4.1-nano",
+  //     input: [
+  //       {
+  //         role: "user",
+  //         content: [
+  //           {
+  //             type: "input_text",
+  //             text: "Describe about the cloth. Output must be start with 'The cloth is' and just decribe about the cloth.",
+  //           },
+  //           {
+  //             type: "input_image",
+  //             image_url: validData.clothImgUrl,
+  //             detail: "high",
+  //           },
+  //         ],
+  //       },
+  //     ],
+  //   }),
+  //   openai.responses.create({
+  //     model: "gpt-4.1-nano",
+  //     input: [
+  //       {
+  //         role: "user",
+  //         content: [
+  //           {
+  //             type: "input_text",
+  //             text: "Describe about the person. Output must be start with 'The person is' and just decribe about the person and background.",
+  //           },
+  //           {
+  //             type: "input_image",
+  //             image_url: `data:${validData.image.type};base64,${imageBuffer}`,
+  //             detail: "high",
+  //           },
+  //         ],
+  //       },
+  //     ],
+  //   }),
+  // ]);
 
-  if (clothRes.error || personRes.error)
-    return data(
-      { error: clothRes.error?.message || personRes.error?.message },
-      { status: 400 },
-    );
+  // if (clothRes.error || personRes.error)
+  //   return data(
+  //     { error: clothRes.error?.message || personRes.error?.message },
+  //     { status: 400 },
+  //   );
 
   const replicate = new Replicate();
 
   const input = {
-    prompt: `Me: ${personRes.output_text}
-    Fitting cloth: ${clothRes.output_text}
-    Make me wears the Fitting cloth. I want to take off my cloth and change the cloth to the garment. Keep everything same in my image except my cloth. Change my cloth only.`,
+   prompt: `the @person wearing the @cloth. keep @person 's pose and background.`,
     aspect_ratio: "3:4",
-    input_images: [
+    reference_tags: ["person", "cloth"],
+    reference_images: [
       `data:${validData.image.type};base64,${imageBuffer}`,
       validData.clothImgUrl,
     ],
   };
 
-  const output = await replicate.run("flux-kontext-apps/multi-image-list", {
+  const output = await replicate.run("runwayml/gen4-image", {
     input,
   });
 
