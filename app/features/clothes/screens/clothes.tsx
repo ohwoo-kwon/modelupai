@@ -6,6 +6,7 @@ import { Await, useSearchParams } from "react-router";
 import { z } from "zod";
 
 import CustomPagination from "~/core/components/custom-pagination";
+import KakaoAdfit from "~/core/components/kakao-ad-fit";
 import { Button } from "~/core/components/ui/button";
 import { Card } from "~/core/components/ui/card";
 import { Input } from "~/core/components/ui/input";
@@ -89,6 +90,7 @@ export default function Clothes({ loaderData }: Route.ComponentProps) {
           Model Up AI 를 통해 원하는 옷을 AI 가상 피팅해볼 수 있어요.
         </h3>
       </div>
+      <KakaoAdfit />
       {/* <div className="flex justify-end">
         <Button className="w-full md:w-fit" asChild>
           <Link to="/clothes/create">피팅하고 싶은 옷 추가</Link>
