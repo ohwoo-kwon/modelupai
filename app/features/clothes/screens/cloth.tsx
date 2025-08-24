@@ -1,9 +1,8 @@
 import type { Route } from "./+types/cloth";
 
 import { Loader2Icon } from "lucide-react";
-import OpenAI from "openai";
 import { useEffect, useState } from "react";
-import { Form, data, useNavigation } from "react-router";
+import { Form, data, useNavigation, useSubmit } from "react-router";
 import Replicate from "replicate";
 import { z } from "zod";
 
@@ -23,7 +22,7 @@ import { fileToBase64, streamToBase64 } from "~/core/lib/utils";
 import ImageInput from "../components/image-input";
 import { clothingCategoryObject } from "../constants";
 import { insertMakeImage } from "../mutations";
-import { getClotheById, getMakeImageCount } from "../queries";
+import { getClotheById } from "../queries";
 
 export const meta: Route.MetaFunction = ({ data }) => {
   return [
@@ -75,64 +74,16 @@ export const action = async ({ request }: Route.ActionArgs) => {
     success,
     error,
   } = formSchema.safeParse(Object.fromEntries(formData));
+
   if (!success)
     return data({ fieldErrors: error.flatten().fieldErrors }, { status: 400 });
 
   const imageBuffer = await fileToBase64(validData.image);
 
-  // const openai = new OpenAI({ apiKey: process.env.OPEN_AI_API_KEY });
-
-  // const [clothRes, personRes] = await Promise.all([
-  //   openai.responses.create({
-  //     model: "gpt-4.1-nano",
-  //     input: [
-  //       {
-  //         role: "user",
-  //         content: [
-  //           {
-  //             type: "input_text",
-  //             text: "Describe about the cloth. Output must be start with 'The cloth is' and just decribe about the cloth.",
-  //           },
-  //           {
-  //             type: "input_image",
-  //             image_url: validData.clothImgUrl,
-  //             detail: "high",
-  //           },
-  //         ],
-  //       },
-  //     ],
-  //   }),
-  //   openai.responses.create({
-  //     model: "gpt-4.1-nano",
-  //     input: [
-  //       {
-  //         role: "user",
-  //         content: [
-  //           {
-  //             type: "input_text",
-  //             text: "Describe about the person. Output must be start with 'The person is' and just decribe about the person and background.",
-  //           },
-  //           {
-  //             type: "input_image",
-  //             image_url: `data:${validData.image.type};base64,${imageBuffer}`,
-  //             detail: "high",
-  //           },
-  //         ],
-  //       },
-  //     ],
-  //   }),
-  // ]);
-
-  // if (clothRes.error || personRes.error)
-  //   return data(
-  //     { error: clothRes.error?.message || personRes.error?.message },
-  //     { status: 400 },
-  //   );
-
   const replicate = new Replicate();
 
   const input = {
-   prompt: `the @person wearing the @cloth. keep @person 's pose and background.`,
+    prompt: `the @person wearing the @cloth. keep @person 's pose and background. Do not generate any sexual or suggestive content. No underwear-only or shirtless images allowed.`,
     aspect_ratio: "3:4",
     reference_tags: ["person", "cloth"],
     reference_images: [
@@ -141,20 +92,9 @@ export const action = async ({ request }: Route.ActionArgs) => {
     ],
   };
 
-  const output = await replicate.run("runwayml/gen4-image", {
+  const output = await replicate.run("runwayml/gen4-image-turbo", {
     input,
   });
-
-  // const input = {
-  //   part: "upper_body",
-  //   image: `data:${validData.image.type};base64,${imageBuffer}`,
-  //   garment: validData.clothImgUrl,
-  // };
-
-  // const output = await replicate.run(
-  //   "subhash25rawat/flux-vton:a02643ce418c0e12bad371c4adbfaec0dd1cb34b034ef37650ef205f92ad6199",
-  //   { input },
-  // );
 
   const imageUrl = await streamToBase64(output as ReadableStream);
 
@@ -192,10 +132,23 @@ export default function Cloth({
 }: Route.ComponentProps) {
   const { cloth } = loaderData;
   const navigation = useNavigation();
+  const submit = useSubmit();
 
   const submitting = navigation.state === "submitting";
 
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [croppedFile, setCroppedFile] = useState<File | null>(null);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault(); // 기본 제출 막기
+    const formData = new FormData(event.currentTarget);
+
+    if (croppedFile) {
+      formData.set("image", croppedFile); // input name과 동일해야 함
+    }
+
+    submit(formData, { method: "POST", encType: "multipart/form-data" });
+  };
 
   useEffect(() => {
     if (submitting) window.open(cloth.shopping_url, "blank");
@@ -218,7 +171,7 @@ export default function Cloth({
           </h3>
           <h3 className="text-center font-semibold md:text-lg">{cloth.name}</h3>
         </div>
-        <Form method="POST" className="space-y-4" encType="multipart/form-data">
+        <Form className="space-y-4" onSubmit={handleSubmit}>
           <input type="hidden" name="clothId" defaultValue={cloth.cloth_id} />
           <input
             type="hidden"
@@ -248,6 +201,7 @@ export default function Cloth({
                     ? actionData.fieldErrors.image
                     : null
                 }
+                setCroppedFile={setCroppedFile}
               />
               <div className="bg-muted space-y-2 rounded p-2">
                 <p className="max-w-96 text-xs">👤 인물 사진 촬영 가이드</p>
@@ -277,7 +231,7 @@ export default function Cloth({
                 참고용으로만 사용해 주세요.
               </p>
               <p className="mt-4 max-w-96 bg-blue-300/30 p-2 text-xs">
-                ⏰ 이미지 생성에 약 30초 소요됩니다.
+                ⏰ 이미지 생성에 약 10초 소요됩니다.
               </p>
             </div>
           </div>
@@ -301,9 +255,9 @@ export default function Cloth({
             </Dialog>
           )}
           <div className="space-y-2 lg:self-end">
-            {actionData && "error" in actionData && actionData.error ? (
+            {/* {actionData && "error" in actionData && actionData.error ? (
               <FormErrors errors={[actionData.error]} />
-            ) : null}
+            ) : null} */}
             <Button className="w-full" type="submit">
               {submitting ? (
                 <Loader2Icon className="size-4 animate-spin" />

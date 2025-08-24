@@ -1,19 +1,111 @@
 import { ImageIcon } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import {
+  type Dispatch,
+  type SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 import FormErrors from "~/core/components/form-errors";
 import { Input } from "~/core/components/ui/input";
 import { Label } from "~/core/components/ui/label";
 import { cn } from "~/core/lib/utils";
 
-export default function ImageInput({ errors }: { errors: string[] | null }) {
+export default function ImageInput({
+  errors,
+  setCroppedFile,
+}: {
+  errors: string[] | null;
+  setCroppedFile?: Dispatch<SetStateAction<File | null>>;
+}) {
   const [image, setImage] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const onChangeImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+
     if (file) {
-      setImage(URL.createObjectURL(file));
+      if (file.size > 10000 * 1024) {
+        alert("파일 크기는 10MB를 초과할 수 없습니다.");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const targetRatio = 4 / 5;
+          const width = img.width;
+          const height = img.height;
+          const currentRatio = width / height;
+
+          let cropWidth: number,
+            cropHeight: number,
+            offsetX: number,
+            offsetY: number;
+
+          if (currentRatio > targetRatio) {
+            // 가로가 더 긴 경우 → 좌우 잘라냄
+            cropHeight = height;
+            cropWidth = height * targetRatio;
+            offsetX = (width - cropWidth) / 2;
+            offsetY = 0; // 위쪽 기준
+          } else {
+            // 세로가 더 긴 경우 → 위쪽 기준으로 아래 잘라냄
+            cropWidth = width;
+            cropHeight = width / targetRatio;
+            offsetX = 0;
+            offsetY = 0;
+          }
+
+          const canvas = document.createElement("canvas");
+          canvas.width = cropWidth;
+          canvas.height = cropHeight;
+          const ctx = canvas.getContext("2d");
+
+          if (!ctx) return;
+
+          ctx.drawImage(
+            img,
+            offsetX,
+            offsetY,
+            cropWidth,
+            cropHeight,
+            0,
+            0,
+            cropWidth,
+            cropHeight,
+          );
+
+          // ✅ preview 설정 (DataURL)
+          const croppedDataUrl = canvas.toDataURL("image/jpeg");
+          setImage(croppedDataUrl);
+
+          // ✅ 파일 자체도 새로운 File 로 변환
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                const croppedFile = new File([blob], file.name, {
+                  type: "image/jpeg",
+                });
+                if (setCroppedFile) setCroppedFile(croppedFile);
+
+                // 👉 서버 업로드 시에는 croppedFile을 사용하세요
+                // 예: formData.append("myImg", croppedFile);
+              }
+            },
+            "image/jpeg",
+            0.95,
+          );
+        };
+
+        if (e.target?.result) {
+          img.src = e.target.result as string;
+        }
+      };
+
+      reader.readAsDataURL(file);
     }
   };
 
@@ -26,15 +118,88 @@ export default function ImageInput({ errors }: { errors: string[] | null }) {
         const item = items[i];
         if (item.type.startsWith("image/")) {
           const file = item.getAsFile();
-          if (file) {
-            const imageUrl = URL.createObjectURL(file);
-            setImage(imageUrl);
 
-            const dataTransfer = new DataTransfer();
-            dataTransfer.items.add(file);
-            if (inputRef.current) {
-              inputRef.current.files = dataTransfer.files;
+          if (file) {
+            if (file.size > 10000 * 1024) {
+              alert("파일 크기는 10MB를 초과할 수 없습니다.");
+              return;
             }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              const img = new Image();
+              img.onload = () => {
+                const targetRatio = 4 / 5;
+                const width = img.width;
+                const height = img.height;
+                const currentRatio = width / height;
+
+                let cropWidth: number,
+                  cropHeight: number,
+                  offsetX: number,
+                  offsetY: number;
+
+                if (currentRatio > targetRatio) {
+                  // 가로가 더 긴 경우 → 좌우 잘라냄
+                  cropHeight = height;
+                  cropWidth = height * targetRatio;
+                  offsetX = (width - cropWidth) / 2;
+                  offsetY = 0; // 위쪽 기준
+                } else {
+                  // 세로가 더 긴 경우 → 위쪽 기준으로 아래 잘라냄
+                  cropWidth = width;
+                  cropHeight = width / targetRatio;
+                  offsetX = 0;
+                  offsetY = 0;
+                }
+
+                const canvas = document.createElement("canvas");
+                canvas.width = cropWidth;
+                canvas.height = cropHeight;
+                const ctx = canvas.getContext("2d");
+
+                if (!ctx) return;
+
+                ctx.drawImage(
+                  img,
+                  offsetX,
+                  offsetY,
+                  cropWidth,
+                  cropHeight,
+                  0,
+                  0,
+                  cropWidth,
+                  cropHeight,
+                );
+
+                // ✅ preview 설정 (DataURL)
+                const croppedDataUrl = canvas.toDataURL("image/jpeg");
+                setImage(croppedDataUrl);
+
+                // ✅ 파일 자체도 새로운 File 로 변환
+                canvas.toBlob(
+                  (blob) => {
+                    if (blob) {
+                      const croppedFile = new File([blob], file.name, {
+                        type: "image/jpeg",
+                      });
+                      if (setCroppedFile) setCroppedFile(croppedFile);
+
+                      // 👉 서버 업로드 시에는 croppedFile을 사용하세요
+                      // 예: formData.append("myImg", croppedFile);
+                    }
+                  },
+                  "image/jpeg",
+                  0.95,
+                );
+              };
+
+              if (e.target?.result) {
+                img.src = e.target.result as string;
+              }
+            };
+
+            reader.readAsDataURL(file);
           }
         }
       }
