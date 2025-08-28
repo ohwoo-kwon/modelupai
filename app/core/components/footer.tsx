@@ -10,10 +10,10 @@ export default function Footer() {
           rights reserved.
         </p>
       </div>
-      <div className="order-1 flex gap-5 *:underline md:order-none">
+      {/* <div className="order-1 flex gap-5 *:underline md:order-none">
         <PrivacyPolicySheet />
         <ServiceSheet />
-      </div>
+      </div> */}
     </footer>
   );
 }

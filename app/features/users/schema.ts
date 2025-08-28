@@ -1,5 +1,13 @@
 import { sql } from "drizzle-orm";
-import { pgPolicy, pgTable, text, uuid } from "drizzle-orm/pg-core";
+import {
+  boolean,
+  decimal,
+  pgPolicy,
+  pgTable,
+  text,
+  uuid,
+  varchar,
+} from "drizzle-orm/pg-core";
 import { authUid, authUsers, authenticatedRole } from "drizzle-orm/supabase";
 
 import { timestamps } from "~/core/db/timestamp";
@@ -12,8 +20,12 @@ export const profiles = pgTable(
       .references(() => authUsers.id, {
         onDelete: "cascade",
       }),
-    name: text().notNull(),
+    email: varchar("email", { length: 255 }).notNull().unique(),
+    name: varchar({ length: 50 }).notNull().unique(),
     avatar_url: text(),
+    is_active: boolean().default(true),
+    total_earnings: decimal({ precision: 10, scale: 2 }).default("0.00"),
+    total_spent: decimal({ precision: 10, scale: 2 }).default("0.00"),
     ...timestamps,
   },
   (table) => [

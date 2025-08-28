@@ -1,9 +1,15 @@
 CREATE TABLE "profiles" (
 	"profile_id" uuid PRIMARY KEY NOT NULL,
-	"name" text NOT NULL,
+	"email" varchar(255) NOT NULL,
+	"name" varchar(50) NOT NULL,
 	"avatar_url" text,
+	"is_active" boolean DEFAULT true,
+	"total_earnings" numeric(10, 2) DEFAULT '0.00',
+	"total_spent" numeric(10, 2) DEFAULT '0.00',
 	"updated_at" timestamp DEFAULT now() NOT NULL,
-	"created_at" timestamp DEFAULT now() NOT NULL
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	CONSTRAINT "profiles_email_unique" UNIQUE("email"),
+	CONSTRAINT "profiles_name_unique" UNIQUE("name")
 );
 --> statement-breakpoint
 ALTER TABLE "profiles" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
@@ -20,17 +26,12 @@ SET SEARCH_PATH = ''
 AS $$
 BEGIN
     IF new.raw_app_meta_data IS NOT NULL AND new.raw_app_meta_data ? 'provider' THEN
-        IF new.raw_app_meta_data ->> 'provider' = 'email' OR new.raw_app_meta_data ->> 'provider' = 'phone' THEN
-            IF new.raw_user_meta_data ? 'name' THEN
-                INSERT INTO public.profiles (profile_id, name)
-                VALUES (new.id, new.raw_user_meta_data ->> 'name');
-            ELSE
-                INSERT INTO public.profiles (profile_id, name)
-                VALUES (new.id, '익명의 사용자');
-            END IF;
+        IF new.raw_app_meta_data ->> 'provider' = 'email' THEN
+                INSERT INTO public.profiles (profile_id, name, email)
+                VALUES (new.id, new.raw_user_meta_data ->> 'name', new.email);
         ELSE
-            INSERT INTO public.profiles (profile_id, name, avatar_url)
-            VALUES (new.id, new.raw_user_meta_data ->> 'full_name', new.raw_user_meta_data ->> 'avatar_url');
+            INSERT INTO public.profiles (profile_id, name, avatar_url, email)
+            VALUES (new.id, new.raw_user_meta_data ->> 'full_name', new.raw_user_meta_data ->> 'avatar_url', new.email);
         END IF;
     END IF;
     RETURN NEW;

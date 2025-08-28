@@ -64,8 +64,8 @@ export default function Profile({ loaderData }: Route.ComponentProps) {
           }}
         </Await>
       </Suspense>
-      <ChangeEmailForm email={user?.email ?? ""} />
-      <ChangePasswordForm hasPassword={hasEmailIdentity ?? false} />
+      {/* <ChangeEmailForm email={user?.email ?? ""} /> */}
+      {/* <ChangePasswordForm hasPassword={hasEmailIdentity ?? false} /> */}
       <DeleteAccountForm />
     </div>
   );

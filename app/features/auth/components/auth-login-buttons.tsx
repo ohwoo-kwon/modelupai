@@ -8,11 +8,11 @@ import GoogleLogo from "./logos/google";
 export default function AuthLoginButtons() {
   return (
     <>
-      <div className="mb-2 flex w-full items-center gap-4">
+      {/* <div className="mb-2 flex w-full items-center gap-4">
         <span className="bg-input h-px w-full"></span>
         <span className="text-muted-foreground text-xs">OR</span>
         <span className="bg-input h-px w-full"></span>
-      </div>
+      </div> */}
       <Button variant="outline" className="relative w-full" asChild>
         <Link to="/auth/social/start/google">
           <GoogleLogo className="absolute top-[9px] left-2" />

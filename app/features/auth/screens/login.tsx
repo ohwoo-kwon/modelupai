@@ -98,14 +98,14 @@ export default function Login({
   };
 
   return (
-    <div className="flex flex-col items-center justify-center gap-4">
+    <div className="mx-4 flex h-[calc(100vh-96px)] items-center justify-center md:h-[calc(100vh-128px)]">
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle>로그인</CardTitle>
           <CardDescription>Model Up AI에 오신 것을 환영합니다.</CardDescription>
         </CardHeader>
-        <CardContent>
-          <Form className="flex flex-col gap-4" method="POST" ref={formRef}>
+        <CardContent className="flex flex-col gap-2">
+          {/* <Form className="flex flex-col gap-4" method="POST" ref={formRef}>
             <div className="flex flex-col gap-2">
               <Label htmlFor="email">이메일</Label>
               <Input
@@ -168,13 +168,13 @@ export default function Login({
                 <FormErrors errors={[actionData.error]} />
               )
             ) : null}
-          </Form>
-        </CardContent>
-        <CardFooter className="flex flex-col gap-2">
+          </Form> */}
           <AuthLoginButtons />
-        </CardFooter>
+        </CardContent>
+        {/* <CardFooter className="flex flex-col gap-2">
+        </CardFooter> */}
       </Card>
-      <div className="flex flex-col items-center justify-center text-sm">
+      {/* <div className="flex flex-col items-center justify-center text-sm">
         <p className="text-muted-foreground">
           아직 회원이 아니신가요?{" "}
           <Link
@@ -186,7 +186,7 @@ export default function Login({
             가입하기
           </Link>
         </p>
-      </div>
+      </div> */}
     </div>
   );
 }

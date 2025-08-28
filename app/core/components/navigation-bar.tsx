@@ -13,7 +13,6 @@ import {
 } from "./ui/dropdown-menu";
 import { Separator } from "./ui/separator";
 import {
-  Sheet,
   SheetClose,
   SheetContent,
   SheetFooter,
@@ -143,44 +142,40 @@ export default function NavigationBar({
 
       {/* PC 화면 */}
       <div className="hidden items-center gap-5 text-sm md:flex">
-        <Sheet>
+        <MenuButtons />
+        <Separator orientation="vertical" className="h-8!" />
+        {loading ? (
+          <div className="flex items-center">
+            <div className="bg-muted-foreground/50 size-8 animate-pulse rounded-full" />
+          </div>
+        ) : name ? (
+          <UserMenu name={name} email={email} avatarUrl={avatarUrl} />
+        ) : (
+          <AuthButtons />
+        )}
+      </div>
+
+      {/* Mobile 화면 */}
+      <SheetTrigger asChild className="size-6 md:hidden">
+        <MenuIcon />
+      </SheetTrigger>
+      <SheetContent>
+        <SheetHeader>
+          <SheetTitle></SheetTitle>
           <MenuButtons />
-          <Separator orientation="vertical" className="h-8!" />
+        </SheetHeader>
+        <SheetFooter>
           {loading ? (
             <div className="flex items-center">
-              <div className="bg-muted-foreground/50 size-8 animate-pulse rounded-full" />
+              <div className="bg-muted-foreground/50 mx-auto h-10 w-full animate-pulse rounded-lg" />
             </div>
           ) : name ? (
             <UserMenu name={name} email={email} avatarUrl={avatarUrl} />
           ) : (
             <AuthButtons />
           )}
-        </Sheet>
-      </div>
-
-      {/* Mobile 화면 */}
-      <Sheet>
-        <SheetTrigger asChild className="size-6 md:hidden">
-          <MenuIcon />
-        </SheetTrigger>
-        <SheetContent>
-          <SheetHeader>
-            <SheetTitle></SheetTitle>
-            <MenuButtons />
-          </SheetHeader>
-          <SheetFooter>
-            {loading ? (
-              <div className="flex items-center">
-                <div className="bg-muted-foreground/50 mx-auto h-10 w-full animate-pulse rounded-lg" />
-              </div>
-            ) : name ? (
-              <UserMenu name={name} email={email} avatarUrl={avatarUrl} />
-            ) : (
-              <AuthButtons />
-            )}
-          </SheetFooter>
-        </SheetContent>
-      </Sheet>
+        </SheetFooter>
+      </SheetContent>
     </nav>
   );
 }
