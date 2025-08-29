@@ -1,4 +1,13 @@
-import { LogOutIcon, MenuIcon, UserIcon } from "lucide-react";
+import {
+  CameraIcon,
+  HeartIcon,
+  LogOutIcon,
+  MenuIcon,
+  ShirtIcon,
+  TrendingUpIcon,
+  UploadIcon,
+  UserIcon,
+} from "lucide-react";
 import { Link } from "react-router";
 
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
@@ -13,8 +22,10 @@ import {
 } from "./ui/dropdown-menu";
 import { Separator } from "./ui/separator";
 import {
+  Sheet,
   SheetClose,
   SheetContent,
+  SheetDescription,
   SheetFooter,
   SheetHeader,
   SheetTitle,
@@ -71,53 +82,64 @@ function MenuButtons() {
     <>
       <SheetClose asChild>
         <Link
-          to="/clothes"
+          to="/trending"
           viewTransition
-          className="hover:text-muted-foreground transition-colors"
+          className="hover:text-muted-foreground flex items-center gap-2 transition-colors"
         >
-          옷
-        </Link>
-      </SheetClose>
-      {/* <SheetClose asChild>
-        <Link
-          to="/models"
-          viewTransition
-          className="hover:text-muted-foreground transition-colors"
-        >
-          모델
-        </Link>
-      </SheetClose> */}
-      {/* <SheetClose asChild>
-        <Link
-          to="/"
-          viewTransition
-          className="hover:text-muted-foreground transition-colors"
-        >
-          Link 2
+          <TrendingUpIcon size={20} /> 인기 사진
         </Link>
       </SheetClose>
       <SheetClose asChild>
         <Link
-          to="/"
+          to="/photos"
           viewTransition
-          className="hover:text-muted-foreground transition-colors"
+          className="hover:text-muted-foreground flex items-center gap-2 transition-colors"
         >
-          Link 3
+          <CameraIcon size={20} /> 사진
         </Link>
-      </SheetClose> */}
+      </SheetClose>
+      <SheetClose asChild>
+        <Link
+          to="/fitting"
+          viewTransition
+          className="hover:text-muted-foreground flex items-center gap-2 transition-colors"
+        >
+          <ShirtIcon size={20} /> 피팅 내역
+        </Link>
+      </SheetClose>
+      <SheetClose asChild>
+        <Link
+          to="/like"
+          viewTransition
+          className="hover:text-muted-foreground flex items-center gap-2 transition-colors"
+        >
+          <HeartIcon size={20} /> 즐겨찾기
+        </Link>
+      </SheetClose>
+      <SheetClose asChild>
+        <Button asChild>
+          <Link
+            to="/upload"
+            viewTransition
+            className="flex items-center gap-2 font-bold transition-colors"
+          >
+            <UploadIcon size={20} /> 사진 업로드
+          </Link>
+        </Button>
+      </SheetClose>
     </>
   );
 }
 
 function AuthButtons() {
   return (
-    <>
+    <SheetClose asChild>
       <Button asChild>
         <Link to="/login" viewTransition>
           로그인
         </Link>
       </Button>
-    </>
+    </SheetClose>
   );
 }
 
@@ -141,41 +163,46 @@ export default function NavigationBar({
       </Link>
 
       {/* PC 화면 */}
-      <div className="hidden items-center gap-5 text-sm md:flex">
-        <MenuButtons />
-        <Separator orientation="vertical" className="h-8!" />
-        {loading ? (
-          <div className="flex items-center">
-            <div className="bg-muted-foreground/50 size-8 animate-pulse rounded-full" />
-          </div>
-        ) : name ? (
-          <UserMenu name={name} email={email} avatarUrl={avatarUrl} />
-        ) : (
-          <AuthButtons />
-        )}
-      </div>
-
-      {/* Mobile 화면 */}
-      <SheetTrigger asChild className="size-6 md:hidden">
-        <MenuIcon />
-      </SheetTrigger>
-      <SheetContent>
-        <SheetHeader>
-          <SheetTitle></SheetTitle>
+      <div className="hidden items-center gap-6 text-sm lg:flex">
+        <Sheet>
           <MenuButtons />
-        </SheetHeader>
-        <SheetFooter>
+          <Separator orientation="vertical" className="h-8!" />
           {loading ? (
             <div className="flex items-center">
-              <div className="bg-muted-foreground/50 mx-auto h-10 w-full animate-pulse rounded-lg" />
+              <div className="bg-muted-foreground/50 size-8 animate-pulse rounded-full" />
             </div>
           ) : name ? (
             <UserMenu name={name} email={email} avatarUrl={avatarUrl} />
           ) : (
             <AuthButtons />
           )}
-        </SheetFooter>
-      </SheetContent>
+        </Sheet>
+      </div>
+
+      {/* Mobile 화면 */}
+      <Sheet>
+        <SheetTrigger asChild className="size-6 lg:hidden">
+          <MenuIcon />
+        </SheetTrigger>
+        <SheetContent>
+          <SheetHeader className="space-y-4">
+            <SheetTitle></SheetTitle>
+            <SheetDescription></SheetDescription>
+            <MenuButtons />
+          </SheetHeader>
+          <SheetFooter>
+            {loading ? (
+              <div className="flex items-center">
+                <div className="bg-muted-foreground/50 mx-auto h-10 w-full animate-pulse rounded-lg" />
+              </div>
+            ) : name ? (
+              <UserMenu name={name} email={email} avatarUrl={avatarUrl} />
+            ) : (
+              <AuthButtons />
+            )}
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
     </nav>
   );
 }

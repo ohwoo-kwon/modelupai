@@ -15,8 +15,6 @@ import {
   useSearchParams,
 } from "react-router";
 
-import { Sheet } from "./core/components/ui/sheet";
-
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
@@ -82,11 +80,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return (
-    <Sheet>
-      <Outlet />
-    </Sheet>
-  );
+  return <Outlet />;
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
