@@ -32,7 +32,7 @@ export default function NavigationLayout({ loaderData }: Route.ComponentProps) {
           }
         </Await>
       </Suspense>
-      <div className="min-h-[calc(100vh-64px)] py-4 md:py-8">
+      <div className="min-h-[calc(100vh-64px)] bg-gradient-to-br from-slate-50 to-slate-100 py-4 md:py-8">
         <Outlet />
       </div>
       <Footer />

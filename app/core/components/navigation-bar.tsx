@@ -1,8 +1,8 @@
 import {
-  CameraIcon,
   HeartIcon,
   LogOutIcon,
   MenuIcon,
+  SearchIcon,
   ShirtIcon,
   TrendingUpIcon,
   UploadIcon,
@@ -79,47 +79,49 @@ function UserMenu({
 
 function MenuButtons() {
   return (
-    <>
-      <SheetClose asChild>
-        <Link
-          to="/trending"
-          viewTransition
-          className="hover:text-muted-foreground flex items-center gap-2 transition-colors"
-        >
-          <TrendingUpIcon size={20} /> 인기 사진
-        </Link>
-      </SheetClose>
-      <SheetClose asChild>
-        <Link
-          to="/photos"
-          viewTransition
-          className="hover:text-muted-foreground flex items-center gap-2 transition-colors"
-        >
-          <CameraIcon size={20} /> 사진
-        </Link>
-      </SheetClose>
-      <SheetClose asChild>
-        <Link
-          to="/fitting"
-          viewTransition
-          className="hover:text-muted-foreground flex items-center gap-2 transition-colors"
-        >
-          <ShirtIcon size={20} /> 피팅 내역
-        </Link>
-      </SheetClose>
-      <SheetClose asChild>
-        <Link
-          to="/like"
-          viewTransition
-          className="hover:text-muted-foreground flex items-center gap-2 transition-colors"
-        >
-          <HeartIcon size={20} /> 즐겨찾기
-        </Link>
-      </SheetClose>
+    <div className="flex h-full flex-col justify-between lg:flex-row lg:items-center lg:justify-center lg:gap-4">
+      <div className="space-y-4 lg:flex lg:items-center lg:gap-4 lg:space-y-0">
+        <SheetClose asChild>
+          <Link
+            to="/trending"
+            viewTransition
+            className="hover:text-muted-foreground flex items-center gap-2 transition-colors"
+          >
+            <TrendingUpIcon size={20} /> 인기 사진
+          </Link>
+        </SheetClose>
+        <SheetClose asChild>
+          <Link
+            to="/explore"
+            viewTransition
+            className="hover:text-muted-foreground flex items-center gap-2 transition-colors"
+          >
+            <SearchIcon size={20} /> 탐색
+          </Link>
+        </SheetClose>
+        <SheetClose asChild>
+          <Link
+            to="/fitting"
+            viewTransition
+            className="hover:text-muted-foreground flex items-center gap-2 transition-colors"
+          >
+            <ShirtIcon size={20} /> 피팅 룸
+          </Link>
+        </SheetClose>
+        <SheetClose asChild>
+          <Link
+            to="/like"
+            viewTransition
+            className="hover:text-muted-foreground flex items-center gap-2 transition-colors"
+          >
+            <HeartIcon size={20} /> 즐겨찾기
+          </Link>
+        </SheetClose>
+      </div>
       <SheetClose asChild>
         <Button asChild>
           <Link
-            to="/upload"
+            to="/photos/upload"
             viewTransition
             className="flex items-center gap-2 font-bold transition-colors"
           >
@@ -127,7 +129,7 @@ function MenuButtons() {
           </Link>
         </Button>
       </SheetClose>
-    </>
+    </div>
   );
 }
 
@@ -163,8 +165,8 @@ export default function NavigationBar({
       </Link>
 
       {/* PC 화면 */}
-      <div className="hidden items-center gap-6 text-sm lg:flex">
-        <Sheet>
+      <Sheet>
+        <div className="hidden items-center gap-6 text-sm lg:flex">
           <MenuButtons />
           <Separator orientation="vertical" className="h-8!" />
           {loading ? (
@@ -176,16 +178,14 @@ export default function NavigationBar({
           ) : (
             <AuthButtons />
           )}
-        </Sheet>
-      </div>
+        </div>
 
-      {/* Mobile 화면 */}
-      <Sheet>
+        {/* Mobile 화면 */}
         <SheetTrigger asChild className="size-6 lg:hidden">
           <MenuIcon />
         </SheetTrigger>
-        <SheetContent>
-          <SheetHeader className="space-y-4">
+        <SheetContent className="h-full">
+          <SheetHeader className="h-full space-y-4 pb-0">
             <SheetTitle></SheetTitle>
             <SheetDescription></SheetDescription>
             <MenuButtons />

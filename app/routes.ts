@@ -28,6 +28,9 @@ export default [
       route("/profile", "features/users/screens/profile.tsx"),
       route("/logout", "features/auth/screens/logout.tsx"),
     ]),
+    ...prefix("/photos", [
+      route("/upload", "features/photos/screens/upload-photo.tsx"),
+    ]),
   ]),
   ...prefix("/api", [
     ...prefix("/users", [

@@ -7,115 +7,57 @@ export type Json =
   | Json[]
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "12.2.3 (519615d)"
+  }
   public: {
     Tables: {
-      clothes: {
+      photos: {
         Row: {
-          category: Database["public"]["Enums"]["clothingCategoryEnum"]
-          cloth_id: number
-          created_at: string
-          image_url: string
-          name: string
-          profile_id: string | null
-          shopping_url: string
-          updated_at: string
-        }
-        Insert: {
-          category: Database["public"]["Enums"]["clothingCategoryEnum"]
-          cloth_id?: never
-          created_at?: string
-          image_url: string
-          name: string
-          profile_id?: string | null
-          shopping_url: string
-          updated_at?: string
-        }
-        Update: {
-          category?: Database["public"]["Enums"]["clothingCategoryEnum"]
-          cloth_id?: never
-          created_at?: string
-          image_url?: string
-          name?: string
-          profile_id?: string | null
-          shopping_url?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "clothes_profile_id_profiles_profile_id_fk"
-            columns: ["profile_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["profile_id"]
-          },
-        ]
-      }
-      models: {
-        Row: {
-          age_range: Database["public"]["Enums"]["age_range"]
-          body_type: Database["public"]["Enums"]["body_type"]
           created_at: string
           description: string | null
-          gender: Database["public"]["Enums"]["gender"]
+          fittings: number | null
           image_url: string
-          is_public: boolean
-          model_id: number
-          name: string
-          profile_id: string | null
-          prompt: string | null
-          race: Database["public"]["Enums"]["race"]
-          reference_model_id: number | null
-          style: Database["public"]["Enums"]["style"]
+          photo_id: string
+          profile_id: string
+          tags: Json | null
+          title: string | null
           updated_at: string
+          views: number | null
         }
         Insert: {
-          age_range?: Database["public"]["Enums"]["age_range"]
-          body_type?: Database["public"]["Enums"]["body_type"]
           created_at?: string
           description?: string | null
-          gender?: Database["public"]["Enums"]["gender"]
+          fittings?: number | null
           image_url: string
-          is_public?: boolean
-          model_id?: never
-          name: string
-          profile_id?: string | null
-          prompt?: string | null
-          race?: Database["public"]["Enums"]["race"]
-          reference_model_id?: number | null
-          style?: Database["public"]["Enums"]["style"]
+          photo_id?: string
+          profile_id: string
+          tags?: Json | null
+          title?: string | null
           updated_at?: string
+          views?: number | null
         }
         Update: {
-          age_range?: Database["public"]["Enums"]["age_range"]
-          body_type?: Database["public"]["Enums"]["body_type"]
           created_at?: string
           description?: string | null
-          gender?: Database["public"]["Enums"]["gender"]
+          fittings?: number | null
           image_url?: string
-          is_public?: boolean
-          model_id?: never
-          name?: string
-          profile_id?: string | null
-          prompt?: string | null
-          race?: Database["public"]["Enums"]["race"]
-          reference_model_id?: number | null
-          style?: Database["public"]["Enums"]["style"]
+          photo_id?: string
+          profile_id?: string
+          tags?: Json | null
+          title?: string | null
           updated_at?: string
+          views?: number | null
         }
         Relationships: [
           {
-            foreignKeyName: "models_profile_id_profiles_profile_id_fk"
+            foreignKeyName: "photos_profile_id_profiles_profile_id_fk"
             columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["profile_id"]
-          },
-          {
-            foreignKeyName: "models_reference_model_id_models_model_id_fk"
-            columns: ["reference_model_id"]
-            isOneToOne: false
-            referencedRelation: "models"
-            referencedColumns: ["model_id"]
           },
         ]
       }
@@ -123,67 +65,37 @@ export type Database = {
         Row: {
           avatar_url: string | null
           created_at: string
+          email: string
+          is_active: boolean | null
           name: string
           profile_id: string
+          total_earnings: number | null
+          total_spent: number | null
           updated_at: string
         }
         Insert: {
           avatar_url?: string | null
           created_at?: string
+          email: string
+          is_active?: boolean | null
           name: string
           profile_id: string
+          total_earnings?: number | null
+          total_spent?: number | null
           updated_at?: string
         }
         Update: {
           avatar_url?: string | null
           created_at?: string
+          email?: string
+          is_active?: boolean | null
           name?: string
           profile_id?: string
+          total_earnings?: number | null
+          total_spent?: number | null
           updated_at?: string
         }
         Relationships: []
-      }
-      profiles_clothes_rel: {
-        Row: {
-          cloth_id: number | null
-          created_at: string
-          id: number
-          image_url: string
-          profile_id: string | null
-          updated_at: string
-        }
-        Insert: {
-          cloth_id?: number | null
-          created_at?: string
-          id?: never
-          image_url: string
-          profile_id?: string | null
-          updated_at?: string
-        }
-        Update: {
-          cloth_id?: number | null
-          created_at?: string
-          id?: never
-          image_url?: string
-          profile_id?: string | null
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "profiles_clothes_rel_cloth_id_clothes_cloth_id_fk"
-            columns: ["cloth_id"]
-            isOneToOne: false
-            referencedRelation: "clothes"
-            referencedColumns: ["cloth_id"]
-          },
-          {
-            foreignKeyName: "profiles_clothes_rel_profile_id_profiles_profile_id_fk"
-            columns: ["profile_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["profile_id"]
-          },
-        ]
       }
     }
     Views: {
@@ -193,58 +105,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      age_range:
-        | "1-5"
-        | "6-10"
-        | "11-15"
-        | "16-20"
-        | "21-25"
-        | "26-30"
-        | "31-35"
-        | "36-40"
-        | "41-45"
-        | "46-50"
-        | "51-55"
-        | "56-60"
-        | "61-"
-      body_type:
-        | "slim"
-        | "average"
-        | "athletic"
-        | "curvy"
-        | "plus"
-        | "muscular"
-        | "petite"
-        | "tall"
-      clothingCategoryEnum:
-        | "top"
-        | "bottom"
-        | "one-piece"
-        | "outer"
-        | "shoes"
-        | "accessory"
-      gender: "male" | "female" | "other"
-      race:
-        | "asian"
-        | "black"
-        | "white"
-        | "latino"
-        | "middle-eastern"
-        | "indian"
-        | "other"
-      style:
-        | "cute"
-        | "sexy"
-        | "casual"
-        | "formal"
-        | "street"
-        | "sporty"
-        | "elegant"
-        | "vintage"
-        | "punk"
-        | "minimal"
-        | "modern"
-        | "goth"
+      [_ in never]: never
     }
     CompositeTypes: {
       [_ in never]: never
@@ -252,21 +113,25 @@ export type Database = {
   }
 }
 
-type DefaultSchema = Database[Extract<keyof Database, "public">]
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-        Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-      Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
     ? R
@@ -284,14 +149,16 @@ export type Tables<
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
     }
     ? I
@@ -307,14 +174,16 @@ export type TablesInsert<
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
     }
     ? U
@@ -330,14 +199,16 @@ export type TablesUpdate<
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
-> = DefaultSchemaEnumNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
     : never
@@ -345,78 +216,22 @@ export type Enums<
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never = never,
-> = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
     ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
 
 export const Constants = {
   public: {
-    Enums: {
-      age_range: [
-        "1-5",
-        "6-10",
-        "11-15",
-        "16-20",
-        "21-25",
-        "26-30",
-        "31-35",
-        "36-40",
-        "41-45",
-        "46-50",
-        "51-55",
-        "56-60",
-        "61-",
-      ],
-      body_type: [
-        "slim",
-        "average",
-        "athletic",
-        "curvy",
-        "plus",
-        "muscular",
-        "petite",
-        "tall",
-      ],
-      clothingCategoryEnum: [
-        "top",
-        "bottom",
-        "one-piece",
-        "outer",
-        "shoes",
-        "accessory",
-      ],
-      gender: ["male", "female", "other"],
-      race: [
-        "asian",
-        "black",
-        "white",
-        "latino",
-        "middle-eastern",
-        "indian",
-        "other",
-      ],
-      style: [
-        "cute",
-        "sexy",
-        "casual",
-        "formal",
-        "street",
-        "sporty",
-        "elegant",
-        "vintage",
-        "punk",
-        "minimal",
-        "modern",
-        "goth",
-      ],
-    },
+    Enums: {},
   },
 } as const
