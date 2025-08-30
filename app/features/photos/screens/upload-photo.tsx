@@ -96,7 +96,6 @@ export const meta: Route.MetaFunction = () => {
     },
 
     { "http-equiv": "X-Content-Type-Options", content: "nosniff" },
-    { "http-equiv": "X-Frame-Options", content: "DENY" },
   ];
 };
 
@@ -185,9 +184,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
     );
 
     if (!formDataValidation.success) {
-      console.log(formDataValidation.error.flatten().fieldErrors);
       return data({
-        success: undefined,
         fieldErrors: formDataValidation.error.flatten().fieldErrors,
         error: undefined,
       });
@@ -210,11 +207,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
       tags,
     });
 
-    return data({
-      success: "사진이 성공적으로 업로드되었습니다!",
-      fieldErrors: undefined,
-      error: undefined,
-    });
+    return redirect("/photos/explore");
   } catch (error) {
     console.error("Upload error:", error);
     let message = "업로드 중 오류가 발생했습니다.";
@@ -223,7 +216,6 @@ export const action = async ({ request }: Route.ActionArgs) => {
     }
     return data(
       {
-        success: undefined,
         fieldErrors: undefined,
         error: message,
       },
@@ -456,9 +448,6 @@ export default function UploadPhoto({ actionData }: Route.ComponentProps) {
                   </div>
                 )}
               </Button>
-              {actionData?.success && (
-                <FormSuccess message={actionData.success} />
-              )}
               {actionData?.error && actionData.error && (
                 <FormErrors errors={[actionData.error]} />
               )}

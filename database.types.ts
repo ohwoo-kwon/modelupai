@@ -18,38 +18,38 @@ export type Database = {
         Row: {
           created_at: string
           description: string | null
-          fittings: number | null
+          fittings: number
           image_url: string
           photo_id: string
           profile_id: string
           tags: Json | null
-          title: string | null
+          title: string
           updated_at: string
-          views: number | null
+          views: number
         }
         Insert: {
           created_at?: string
           description?: string | null
-          fittings?: number | null
+          fittings?: number
           image_url: string
           photo_id?: string
           profile_id: string
           tags?: Json | null
-          title?: string | null
+          title: string
           updated_at?: string
-          views?: number | null
+          views?: number
         }
         Update: {
           created_at?: string
           description?: string | null
-          fittings?: number | null
+          fittings?: number
           image_url?: string
           photo_id?: string
           profile_id?: string
           tags?: Json | null
-          title?: string | null
+          title?: string
           updated_at?: string
-          views?: number | null
+          views?: number
         }
         Relationships: [
           {
@@ -102,7 +102,22 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      search_photos: {
+        Args: { search_term?: string }
+        Returns: {
+          created_at: string
+          description: string
+          fittings: number
+          image_url: string
+          photo_id: string
+          profile: Json
+          profile_id: string
+          tags: Json
+          title: string
+          updated_at: string
+          views: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

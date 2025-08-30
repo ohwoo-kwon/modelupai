@@ -22,11 +22,11 @@ export const photos = pgTable(
       .references(() => profiles.profile_id, { onDelete: "cascade" })
       .notNull(),
     image_url: varchar({ length: 500 }).notNull(),
-    title: varchar({ length: 200 }),
+    title: varchar({ length: 200 }).notNull(),
     description: text(),
     tags: jsonb("tags").$type<string[]>().default([]),
-    views: integer().default(0),
-    fittings: integer().default(0),
+    views: integer().notNull().default(0),
+    fittings: integer().notNull().default(0),
     ...timestamps,
   },
   (table) => [

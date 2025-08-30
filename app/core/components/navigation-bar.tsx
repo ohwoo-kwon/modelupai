@@ -92,7 +92,7 @@ function MenuButtons() {
         </SheetClose>
         <SheetClose asChild>
           <Link
-            to="/explore"
+            to="/photos/explore"
             viewTransition
             className="hover:text-muted-foreground flex items-center gap-2 transition-colors"
           >

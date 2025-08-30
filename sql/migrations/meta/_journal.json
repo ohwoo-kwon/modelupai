@@ -15,6 +15,20 @@
       "when": 1756471705812,
       "tag": "0001_brief_slapstick",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1756527878532,
+      "tag": "0002_flaky_infant_terrible",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1756527935352,
+      "tag": "0003_aspiring_zaran",
+      "breakpoints": true
     }
   ]
 }

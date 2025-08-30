@@ -1,0 +1,281 @@
+{
+  "id": "70046cb5-d0d2-41e0-a1f3-6d47a5bb72d1",
+  "prevId": "5ce2171c-0d93-4975-b3bd-7b814e44f850",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.photos": {
+      "name": "photos",
+      "schema": "",
+      "columns": {
+        "photo_id": {
+          "name": "photo_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "profile_id": {
+          "name": "profile_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "image_url": {
+          "name": "image_url",
+          "type": "varchar(500)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tags": {
+          "name": "tags",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'[]'::jsonb"
+        },
+        "views": {
+          "name": "views",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "fittings": {
+          "name": "fittings",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "photos_profile_id_profiles_profile_id_fk": {
+          "name": "photos_profile_id_profiles_profile_id_fk",
+          "tableFrom": "photos",
+          "tableTo": "profiles",
+          "columnsFrom": [
+            "profile_id"
+          ],
+          "columnsTo": [
+            "profile_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "select-photo-policy": {
+          "name": "select-photo-policy",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "public"
+          ],
+          "using": "true"
+        },
+        "insert-photos-policy": {
+          "name": "insert-photos-policy",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "authenticated"
+          ],
+          "withCheck": "(select auth.uid()) = \"photos\".\"profile_id\""
+        },
+        "edit-photo-policy": {
+          "name": "edit-photo-policy",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "(select auth.uid()) = \"photos\".\"profile_id\"",
+          "withCheck": "(select auth.uid()) = \"photos\".\"profile_id\""
+        },
+        "delete-photo-policy": {
+          "name": "delete-photo-policy",
+          "as": "PERMISSIVE",
+          "for": "DELETE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "(select auth.uid()) = \"photos\".\"profile_id\""
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.profiles": {
+      "name": "profiles",
+      "schema": "",
+      "columns": {
+        "profile_id": {
+          "name": "profile_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "avatar_url": {
+          "name": "avatar_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
+        "total_earnings": {
+          "name": "total_earnings",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'0.00'"
+        },
+        "total_spent": {
+          "name": "total_spent",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'0.00'"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "profiles_profile_id_users_id_fk": {
+          "name": "profiles_profile_id_users_id_fk",
+          "tableFrom": "profiles",
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsFrom": [
+            "profile_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "profiles_email_unique": {
+          "name": "profiles_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        },
+        "profiles_name_unique": {
+          "name": "profiles_name_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "name"
+          ]
+        }
+      },
+      "policies": {
+        "edit-profile-policy": {
+          "name": "edit-profile-policy",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "(select auth.uid()) = \"profiles\".\"profile_id\"",
+          "withCheck": "(select auth.uid()) = \"profiles\".\"profile_id\""
+        },
+        "delete-profile-policy": {
+          "name": "delete-profile-policy",
+          "as": "PERMISSIVE",
+          "for": "DELETE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "(select auth.uid()) = \"profiles\".\"profile_id\""
+        },
+        "select-profile-policy": {
+          "name": "select-profile-policy",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "public"
+          ],
+          "using": "true"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
