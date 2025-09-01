@@ -22,6 +22,7 @@ export const photos = pgTable(
       .references(() => profiles.profile_id, { onDelete: "cascade" })
       .notNull(),
     image_url: varchar({ length: 500 }).notNull(),
+    lookbook_url: varchar({ length: 500 }).notNull(),
     title: varchar({ length: 200 }).notNull(),
     description: text(),
     tags: jsonb("tags").$type<string[]>().default([]),

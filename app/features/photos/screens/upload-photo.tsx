@@ -2,13 +2,12 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import type { Route } from "./+types/upload-photo";
 
-import { ImageIcon, UploadIcon, XIcon } from "lucide-react";
-import { useRef, useState } from "react";
-import { Form, data, redirect, useNavigation } from "react-router";
+import { ImageIcon, Loader2Icon, UploadIcon, XIcon } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Form, data, redirect, useFetcher, useNavigation } from "react-router";
 import { z } from "zod";
 
 import FormErrors from "~/core/components/form-errors";
-import FormSuccess from "~/core/components/form-success";
 import { Badge } from "~/core/components/ui/badge";
 import { Button } from "~/core/components/ui/button";
 import {
@@ -129,6 +128,53 @@ async function uploadImageToStorage(
   return publicUrl;
 }
 
+async function uploadImageToLookbookStorage(
+  client: SupabaseClient,
+  base64Data: string,
+  userId: string,
+): Promise<string> {
+  try {
+    // 1. base64Data에서 헤더 제거
+    const base64 = base64Data.split(",")[1];
+    const contentType =
+      base64Data.match(/data:(.*?);base64/)?.[1] || "image/png";
+
+    // 2. base64 → Uint8Array
+    const binary = atob(base64);
+    const arrayBuffer = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+      arrayBuffer[i] = binary.charCodeAt(i);
+    }
+
+    // 3. 파일명 생성
+    const fileExt = contentType.split("/")[1];
+    const fileName = `${userId}/${Date.now()}-${Math.random()
+      .toString(36)
+      .substring(2)}.${fileExt}`;
+
+    // 4. Supabase Storage 업로드
+    const { data, error } = await client.storage
+      .from("lookbooks") // 저장할 bucket 이름
+      .upload(fileName, arrayBuffer, {
+        contentType,
+        cacheControl: "3600",
+        upsert: false,
+      });
+
+    if (error) throw new Error(error.message);
+
+    // 5. 업로드한 파일의 public URL 반환
+    const {
+      data: { publicUrl },
+    } = client.storage.from("lookbooks").getPublicUrl(fileName);
+
+    return publicUrl;
+  } catch (err: any) {
+    console.error(err);
+    throw new Error(`이미지 업로드 실패: ${err.message}`);
+  }
+}
+
 const formSchema = z.object({
   image: z
     .instanceof(File)
@@ -144,6 +190,7 @@ const formSchema = z.object({
         ),
       "지원되는 이미지 형식: JPEG, PNG, GIF, WebP",
     ),
+  lookbookImageUrl: z.string(),
   title: z
     .string()
     .min(1, "제목을 입력해주세요.")
@@ -190,7 +237,8 @@ export const action = async ({ request }: Route.ActionArgs) => {
       });
     }
 
-    const { image, title, description, tags } = formDataValidation.data;
+    const { image, lookbookImageUrl, title, description, tags } =
+      formDataValidation.data;
     const {
       data: { user },
     } = await client.auth.getUser();
@@ -199,9 +247,16 @@ export const action = async ({ request }: Route.ActionArgs) => {
 
     const imgUrl = await uploadImageToStorage(client, image, user.id);
 
+    const lookbook_url = await uploadImageToLookbookStorage(
+      client,
+      lookbookImageUrl,
+      user.id,
+    );
+
     await createPhoto(client, {
       profile_id: user.id,
       image_url: imgUrl,
+      lookbook_url,
       title,
       description,
       tags,
@@ -226,13 +281,17 @@ export const action = async ({ request }: Route.ActionArgs) => {
 
 export default function UploadPhoto({ actionData }: Route.ComponentProps) {
   const navigation = useNavigation();
+  const fetcher = useFetcher();
+
   const [preview, setPreview] = useState<string | null>(null);
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
+  const [resultImgUrl, setResultImgUrl] = useState("");
 
   const imgInputRef = useRef<HTMLInputElement>(null);
 
   const isSubmitting = navigation.state === "submitting";
+  const isMaking = fetcher.state === "submitting";
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -243,6 +302,23 @@ export default function UploadPhoto({ actionData }: Route.ComponentProps) {
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleMakeLookBook = () => {
+    const files = imgInputRef.current?.files;
+
+    if (!files) return;
+
+    const file = files[0];
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    fetcher.submit(formData, {
+      method: "POST",
+      action: "/api/photos/lookbook",
+      encType: "multipart/form-data",
+    });
   };
 
   const addTag = () => {
@@ -263,6 +339,12 @@ export default function UploadPhoto({ actionData }: Route.ComponentProps) {
       addTag();
     }
   };
+
+  useEffect(() => {
+    if (fetcher.data?.imageUrl) {
+      setResultImgUrl(fetcher.data.imageUrl);
+    }
+  }, [fetcher.data]);
 
   return (
     <div className="min-h-screen p-4">
@@ -310,17 +392,26 @@ export default function UploadPhoto({ actionData }: Route.ComponentProps) {
                         alt="Preview"
                         className="mx-auto aspect-square w-full rounded-lg object-contain shadow-md"
                       />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="text-sm"
-                        onClick={() => {
-                          setPreview(null);
-                          imgInputRef.current?.click();
-                        }}
-                      >
-                        이미지 변경
-                      </Button>
+                      <div className="space-x-4">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="text-sm"
+                          onClick={() => {
+                            setPreview(null);
+                            imgInputRef.current?.click();
+                          }}
+                        >
+                          이미지 변경
+                        </Button>
+                        <Button
+                          type="button"
+                          className="text-sm"
+                          onClick={handleMakeLookBook}
+                        >
+                          룩북 제작
+                        </Button>
+                      </div>
                     </div>
                   ) : (
                     <Label
@@ -345,6 +436,43 @@ export default function UploadPhoto({ actionData }: Route.ComponentProps) {
                     onChange={handleImageChange}
                     className="hidden"
                   />
+                </div>
+              </div>
+
+              {/* 룩북 */}
+              <div className="space-y-2">
+                <Label htmlFor="image" className="text-sm font-medium">
+                  룩북 <span className="text-red-500">*</span>
+                </Label>
+                {fetcher.data && fetcher.data.error && (
+                  <FormErrors errors={fetcher.data.error} />
+                )}
+                {actionData?.fieldErrors &&
+                  actionData.fieldErrors.lookbookImageUrl && (
+                    <FormErrors
+                      errors={actionData.fieldErrors.lookbookImageUrl}
+                    />
+                  )}
+                <div className="aspect-square rounded-lg border-2 border-dashed border-slate-300 p-1 transition-colors hover:border-slate-400">
+                  {isMaking && (
+                    <div className="flex h-full w-full animate-pulse items-center justify-center bg-slate-200">
+                      <Loader2Icon className="size-20 animate-spin text-slate-400" />
+                    </div>
+                  )}
+                  {resultImgUrl && (
+                    <>
+                      <img
+                        src={resultImgUrl}
+                        alt="Preview"
+                        className="mx-auto aspect-square w-full rounded-lg object-contain shadow-md"
+                      />
+                      <Input
+                        type="hidden"
+                        name="lookbookImageUrl"
+                        defaultValue={resultImgUrl}
+                      />
+                    </>
+                  )}
                 </div>
               </div>
 

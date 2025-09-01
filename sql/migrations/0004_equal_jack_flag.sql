@@ -1,0 +1,1 @@
+ALTER TABLE "photos" ADD COLUMN "lookbook_url" varchar(500) NOT NULL;

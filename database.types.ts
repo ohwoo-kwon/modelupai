@@ -20,6 +20,7 @@ export type Database = {
           description: string | null
           fittings: number
           image_url: string
+          lookbook_url: string
           photo_id: string
           profile_id: string
           tags: Json | null
@@ -32,6 +33,7 @@ export type Database = {
           description?: string | null
           fittings?: number
           image_url: string
+          lookbook_url: string
           photo_id?: string
           profile_id: string
           tags?: Json | null
@@ -44,6 +46,7 @@ export type Database = {
           description?: string | null
           fittings?: number
           image_url?: string
+          lookbook_url?: string
           photo_id?: string
           profile_id?: string
           tags?: Json | null

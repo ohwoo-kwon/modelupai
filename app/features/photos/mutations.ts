@@ -6,12 +6,14 @@ export async function createPhoto(
   {
     profile_id,
     image_url,
+    lookbook_url,
     title,
     description,
     tags,
   }: {
     profile_id: string;
     image_url: string;
+    lookbook_url: string;
     title: string;
     description: string | null;
     tags: string[];
@@ -20,6 +22,7 @@ export async function createPhoto(
   const { error } = await client.from("photos").insert({
     profile_id,
     image_url,
+    lookbook_url,
     title,
     description,
     tags,

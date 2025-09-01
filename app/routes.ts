@@ -41,5 +41,6 @@ export default [
       route("/email", "features/users/apis/change-email.tsx"),
       route("/profile", "features/users/apis/edit-profile.tsx"),
     ]),
+    route("/photos/lookbook", "features/photos/apis/generate-lookbook.tsx"),
   ]),
 ] satisfies RouteConfig;
