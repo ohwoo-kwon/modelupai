@@ -31,6 +31,7 @@ export default [
     ...prefix("/photos", [
       route("/upload", "features/photos/screens/upload-photo.tsx"),
       route("/explore", "features/photos/screens/explore-photos.tsx"),
+      route("/:photo_id", "features/photos/screens/photo.tsx"),
     ]),
   ]),
   ...prefix("/api", [

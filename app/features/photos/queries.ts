@@ -9,9 +9,21 @@ export async function getPhotos(
     search_term: searchQuery.trim() || "",
   });
 
-  if (error) {
-    throw error;
-  }
+  if (error) throw error;
+
+  return data;
+}
+
+export async function getPhoto(
+  client: SupabaseClient<Database>,
+  photo_id: string,
+) {
+  const { data, error } = await client
+    .from("photos")
+    .select("*, profile:profile_id()")
+    .eq("photo_id", photo_id)
+    .single();
+  if (error) throw error;
 
   return data;
 }

@@ -10,6 +10,44 @@ import makeServerClient from "~/core/lib/supa-client.server";
 
 import { getPhotos } from "../queries";
 
+export const meta: Route.MetaFunction = ({ data }) => {
+  const searchQuery = data?.initSearchQuery || "";
+  const baseTitle = `패션 탐색 | ${import.meta.env.VITE_APP_NAME} 가상 피팅`;
+  const title = searchQuery
+    ? `"${searchQuery}" 관련 패션 이미지 검색 | ${import.meta.env.VITE_APP_NAME} 가상 피팅`
+    : baseTitle;
+  const description = searchQuery
+    ? `"${searchQuery}"와 관련된 최신 패션 사진을 둘러보세요. AI 가상 피팅으로 직접 입어볼 수도 있습니다.`
+    : "최신 패션 트렌드를 한눈에! 마음에 드는 스타일을 탐색하고, AI 가상 피팅으로 직접 입어보세요.";
+
+  const image = "";
+
+  return [
+    { title },
+    { name: "description", content: description },
+
+    // SEO keywords
+    {
+      name: "keywords",
+      content:
+        "패션, 패션 탐색, 옷 추천, 스타일, AI 가상 피팅, 가상 피팅, 코디, 트렌드",
+    },
+
+    // Open Graph
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:image", content: image },
+    { property: "og:type", content: "website" },
+    { property: "og:url", content: "https://fitmeai.store" },
+
+    // Twitter Cards
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+    { name: "twitter:image", content: image },
+  ];
+};
+
 export const loader = async ({ request }: Route.LoaderArgs) => {
   const [client] = makeServerClient(request);
 
@@ -119,9 +157,12 @@ export default function ExplorePhotos({ loaderData }: Route.ComponentProps) {
                 <Link
                   key={photo.photo_id}
                   className="cursor-pointer overflow-hidden shadow transition-all hover:scale-105"
-                  to="/"
+                  to={`/photos/${photo.photo_id}`}
                 >
-                  <img className="aspect-square" src={photo.image_url} />
+                  <img
+                    className="aspect-square object-cover"
+                    src={photo.image_url}
+                  />
                 </Link>
               ))
             }
