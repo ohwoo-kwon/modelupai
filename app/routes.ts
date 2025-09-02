@@ -31,10 +31,12 @@ export default [
     layout("core/layouts/private.layout.tsx", { id: "private-photo" }, [
       ...prefix("/photos", [
         route("/upload", "features/photos/screens/upload-photo.tsx"),
-        route("/:photo_id", "features/photos/screens/photo.tsx"),
       ]),
     ]),
-    route("/photos/explore", "features/photos/screens/explore-photos.tsx"),
+    ...prefix("/photos", [
+      route("/:photo_id", "features/photos/screens/photo.tsx"),
+      route("/explore", "features/photos/screens/explore-photos.tsx"),
+    ]),
   ]),
   ...prefix("/api", [
     ...prefix("/users", [
