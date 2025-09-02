@@ -29,3 +29,22 @@ export async function createPhoto(
   });
   if (error) throw error;
 }
+
+export async function insertView(
+  client: SupabaseClient<Database>,
+  {
+    profile_id,
+    image_url,
+    lookbook_url,
+    title,
+    description,
+    tags,
+  }: {
+    profile_id: string;
+    image_url: string;
+    lookbook_url: string;
+    title: string;
+    description: string | null;
+    tags: string[];
+  },
+) {}

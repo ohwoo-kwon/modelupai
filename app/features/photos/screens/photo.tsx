@@ -1,6 +1,8 @@
 import type { Route } from "./+types/photo";
 
 import { EyeIcon, GemIcon, HeartIcon, ShirtIcon } from "lucide-react";
+import { useEffect } from "react";
+import { useFetcher } from "react-router";
 
 import {
   Avatar,
@@ -82,6 +84,30 @@ export const loader = async ({ request, params }: Route.LoaderArgs) => {
 
 export default function Photo({ loaderData }: Route.ComponentProps) {
   const { photo } = loaderData;
+
+  const fetcher = useFetcher();
+
+  // 페이지 로드 시 조회수 증가
+  useEffect(() => {
+    const recordView = async () => {
+      // 짧은 지연 후 조회수 기록 (페이지가 완전히 로드된 후)
+      setTimeout(() => {
+        fetcher.submit(
+          {
+            user_agent: navigator.userAgent,
+          },
+          {
+            method: "POST",
+            action: `/api/photos/${photo.photo_id}/view`,
+            encType: "application/json",
+          },
+        );
+      }, 1000);
+    };
+
+    recordView();
+  }, [photo.photo_id, fetcher]);
+
   return (
     <div className="h-full px-4">
       <div className="mx-auto max-w-2xl space-y-4">

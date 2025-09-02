@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      photo_views: {
+        Row: {
+          id: string
+          ip_address: string | null
+          photo_id: string
+          user_agent: string | null
+          user_id: string | null
+          viewed_at: string
+        }
+        Insert: {
+          id?: string
+          ip_address?: string | null
+          photo_id: string
+          user_agent?: string | null
+          user_id?: string | null
+          viewed_at?: string
+        }
+        Update: {
+          id?: string
+          ip_address?: string | null
+          photo_id?: string
+          user_agent?: string | null
+          user_id?: string | null
+          viewed_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "photo_views_photo_id_photos_photo_id_fk"
+            columns: ["photo_id"]
+            isOneToOne: false
+            referencedRelation: "photos"
+            referencedColumns: ["photo_id"]
+          },
+          {
+            foreignKeyName: "photo_views_user_id_profiles_profile_id_fk"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
       photos: {
         Row: {
           created_at: string
@@ -105,6 +147,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      increment_photo_views: {
+        Args: { photo_id_param: string }
+        Returns: undefined
+      }
       search_photos: {
         Args: { search_term?: string }
         Returns: {

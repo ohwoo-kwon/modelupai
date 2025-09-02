@@ -36,6 +36,13 @@
       "when": 1756711532283,
       "tag": "0004_equal_jack_flag",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1756791893032,
+      "tag": "0005_salty_gladiator",
+      "breakpoints": true
     }
   ]
 }

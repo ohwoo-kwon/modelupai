@@ -45,6 +45,9 @@ export default [
       route("/email", "features/users/apis/change-email.tsx"),
       route("/profile", "features/users/apis/edit-profile.tsx"),
     ]),
-    route("/photos/lookbook", "features/photos/apis/generate-lookbook.tsx"),
+    ...prefix("/photos", [
+      route("/lookbook", "features/photos/apis/generate-lookbook.tsx"),
+      route("/:photoId/view", "features/photos/apis/view.tsx"),
+    ]),
   ]),
 ] satisfies RouteConfig;
