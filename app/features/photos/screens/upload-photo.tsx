@@ -21,12 +21,16 @@ import { Input } from "~/core/components/ui/input";
 import { Label } from "~/core/components/ui/label";
 import { Textarea } from "~/core/components/ui/textarea";
 import makeServerClient from "~/core/lib/supa-client.server";
+import {
+  uploadBase64ToStorage,
+  uploadImageFileToStorage,
+} from "~/core/lib/utils";
 
 import { createPhoto } from "../mutations";
 
 export const meta: Route.MetaFunction = () => {
   return [
-    { title: `사진 업로드 | ${import.meta.env.VITE_APP_NAME} 가상 피팅` },
+    { title: `패션 업로드 | ${import.meta.env.VITE_APP_NAME} 가상 피팅` },
     {
       name: "description",
       content:
@@ -48,7 +52,7 @@ export const meta: Route.MetaFunction = () => {
     { property: "og:image", content: "" },
     {
       property: "og:image:alt",
-      content: `${import.meta.env.VITE_APP_NAME} 가상 피팅 사진 업로드 페이지`,
+      content: `${import.meta.env.VITE_APP_NAME} 가상 피팅 패션 업로드 페이지`,
     },
     { property: "og:locale", content: "ko_KR" },
     { property: "og:site_name", content: import.meta.env.VITE_APP_NAME },
@@ -66,7 +70,7 @@ export const meta: Route.MetaFunction = () => {
     { name: "twitter:image", content: "" },
     {
       name: "twitter:image:alt",
-      content: `${import.meta.env.VITE_APP_NAME} 가상 피팅 사진 업로드 페이지`,
+      content: `${import.meta.env.VITE_APP_NAME} 가상 피팅 패션 업로드 페이지`,
     },
 
     {
@@ -97,83 +101,6 @@ export const meta: Route.MetaFunction = () => {
     { "http-equiv": "X-Content-Type-Options", content: "nosniff" },
   ];
 };
-
-async function uploadImageToStorage(
-  client: SupabaseClient,
-  file: File,
-  userId: string,
-): Promise<string> {
-  const fileExt = file.name.split(".").pop();
-  const fileName = `${userId}/${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-
-  const arrayBuffer = await file.arrayBuffer();
-
-  const { data, error } = await client.storage
-    .from("photos")
-    .upload(fileName, arrayBuffer, {
-      contentType: file.type,
-      cacheControl: "3600",
-      upsert: false,
-    });
-
-  if (error) {
-    console.error("Storage upload error:", error);
-    throw new Error(`이미지 업로드에 실패했습니다: ${error.message}`);
-  }
-
-  const {
-    data: { publicUrl },
-  } = client.storage.from("photos").getPublicUrl(data.path);
-
-  return publicUrl;
-}
-
-async function uploadImageToLookbookStorage(
-  client: SupabaseClient,
-  base64Data: string,
-  userId: string,
-): Promise<string> {
-  try {
-    // 1. base64Data에서 헤더 제거
-    const base64 = base64Data.split(",")[1];
-    const contentType =
-      base64Data.match(/data:(.*?);base64/)?.[1] || "image/png";
-
-    // 2. base64 → Uint8Array
-    const binary = atob(base64);
-    const arrayBuffer = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) {
-      arrayBuffer[i] = binary.charCodeAt(i);
-    }
-
-    // 3. 파일명 생성
-    const fileExt = contentType.split("/")[1];
-    const fileName = `${userId}/${Date.now()}-${Math.random()
-      .toString(36)
-      .substring(2)}.${fileExt}`;
-
-    // 4. Supabase Storage 업로드
-    const { data, error } = await client.storage
-      .from("lookbooks") // 저장할 bucket 이름
-      .upload(fileName, arrayBuffer, {
-        contentType,
-        cacheControl: "3600",
-        upsert: false,
-      });
-
-    if (error) throw new Error(error.message);
-
-    // 5. 업로드한 파일의 public URL 반환
-    const {
-      data: { publicUrl },
-    } = client.storage.from("lookbooks").getPublicUrl(fileName);
-
-    return publicUrl;
-  } catch (err: any) {
-    console.error(err);
-    throw new Error(`이미지 업로드 실패: ${err.message}`);
-  }
-}
 
 const formSchema = z.object({
   image: z
@@ -245,12 +172,18 @@ export const action = async ({ request }: Route.ActionArgs) => {
 
     if (!user) return redirect("/login");
 
-    const imgUrl = await uploadImageToStorage(client, image, user.id);
+    const imgUrl = await uploadImageFileToStorage(
+      client,
+      image,
+      user.id,
+      "photos",
+    );
 
-    const lookbook_url = await uploadImageToLookbookStorage(
+    const lookbook_url = await uploadBase64ToStorage(
       client,
       lookbookImageUrl,
       user.id,
+      "lookbooks",
     );
 
     await createPhoto(client, {
@@ -349,14 +282,14 @@ export default function UploadPhoto({ actionData }: Route.ComponentProps) {
   return (
     <div className="min-h-screen p-4">
       <div className="mx-auto max-w-2xl">
-        <div className="mb-8 text-center">
-          <h1 className="mb-2 text-3xl font-bold text-slate-900">
+        <div className="mb-4 space-y-2 text-center">
+          <h1 className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-2xl font-bold text-transparent">
             패션 업로드
           </h1>
-          <p className="text-slate-600">
+          <h3>
             당신의 패션을 업로드하고 AI 가상 피팅을 통해 다른 사용자들과
             공유하세요.
-          </p>
+          </h3>
         </div>
 
         <Card className="border-0 bg-white/80 shadow-lg backdrop-blur-sm">
@@ -567,7 +500,7 @@ export default function UploadPhoto({ actionData }: Route.ComponentProps) {
                 ) : (
                   <div className="flex items-center gap-2">
                     <UploadIcon className="h-4 w-4" />
-                    사진 업로드
+                    패션 업로드
                   </div>
                 )}
               </Button>

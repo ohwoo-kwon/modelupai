@@ -31,6 +31,13 @@ export default [
     layout("core/layouts/private.layout.tsx", { id: "private-photo" }, [
       ...prefix("/photos", [
         route("/upload", "features/photos/screens/upload-photo.tsx"),
+        route("/:photoId/fitting", "features/photos/screens/photo-fitting.tsx"),
+      ]),
+    ]),
+    layout("core/layouts/private.layout.tsx", { id: "private-fitting" }, [
+      ...prefix("/fittings", [
+        index("features/fittings/screens/fittings.tsx"),
+        route("/:photoId", "features/fittings/screens/fitting.tsx"),
       ]),
     ]),
     ...prefix("/photos", [

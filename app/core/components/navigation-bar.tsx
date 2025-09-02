@@ -101,7 +101,7 @@ function MenuButtons() {
         </SheetClose>
         <SheetClose asChild>
           <Link
-            to="/fitting"
+            to="/fittings"
             viewTransition
             className="hover:text-muted-foreground flex items-center gap-2 transition-colors"
           >
@@ -125,7 +125,7 @@ function MenuButtons() {
             viewTransition
             className="flex items-center gap-2 font-bold transition-colors"
           >
-            <UploadIcon size={20} /> 사진 업로드
+            <UploadIcon size={20} /> 패션 업로드
           </Link>
         </Button>
       </SheetClose>

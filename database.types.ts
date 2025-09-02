@@ -18,7 +18,7 @@ export type Database = {
         Row: {
           created_at: string
           feedback: string | null
-          id: string
+          fitting_id: string
           is_public: boolean
           photo_id: string
           profile_id: string
@@ -30,7 +30,7 @@ export type Database = {
         Insert: {
           created_at?: string
           feedback?: string | null
-          id?: string
+          fitting_id?: string
           is_public?: boolean
           photo_id: string
           profile_id: string
@@ -42,7 +42,7 @@ export type Database = {
         Update: {
           created_at?: string
           feedback?: string | null
-          id?: string
+          fitting_id?: string
           is_public?: boolean
           photo_id?: string
           profile_id?: string

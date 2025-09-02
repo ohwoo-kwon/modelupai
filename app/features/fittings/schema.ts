@@ -17,7 +17,7 @@ import { profiles } from "../users/schema";
 export const fittings = pgTable(
   "fittings",
   {
-    id: uuid("id").primaryKey().defaultRandom().notNull(),
+    fitting_id: uuid().primaryKey().defaultRandom().notNull(),
     profile_id: uuid()
       .references(() => profiles.profile_id)
       .notNull(),

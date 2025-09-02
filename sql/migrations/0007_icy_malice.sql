@@ -1,0 +1,1 @@
+ALTER TABLE "fittings" RENAME COLUMN "id" TO "fitting_id";

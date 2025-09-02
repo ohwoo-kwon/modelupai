@@ -1,8 +1,8 @@
 import type { Route } from "./+types/photo";
 
-import { EyeIcon, GemIcon, HeartIcon, ShirtIcon } from "lucide-react";
+import { EyeIcon, HeartIcon, ShirtIcon } from "lucide-react";
 import { useEffect } from "react";
-import { useFetcher } from "react-router";
+import { Link, useFetcher } from "react-router";
 
 import {
   Avatar,
@@ -104,7 +104,6 @@ export default function Photo({ loaderData }: Route.ComponentProps) {
         );
       }, 1000);
     };
-
     recordView();
   }, [photo.photo_id]);
 
@@ -123,8 +122,10 @@ export default function Photo({ loaderData }: Route.ComponentProps) {
             className="rounded shadow-md"
           />
         </div>
-        <Button className="w-full">
-          <GemIcon /> <span>AI 피팅</span>
+        <Button className="w-full" asChild>
+          <Link to={`/photos/${photo.photo_id}/fitting`}>
+            <span>AI 피팅</span>
+          </Link>
         </Button>
         <Separator />
         <div className="space-y-2">
