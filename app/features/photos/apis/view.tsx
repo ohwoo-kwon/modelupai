@@ -33,7 +33,7 @@ export const action = async ({ request, params }: Route.ActionArgs) => {
         .from("photo_views")
         .select("id")
         .eq("photo_id", photoId)
-        .eq("user_id", currentUserId)
+        .eq("profile_id", currentUserId)
         .gte(
           "viewed_at",
           new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
@@ -52,7 +52,7 @@ export const action = async ({ request, params }: Route.ActionArgs) => {
         .from("photo_views")
         .select("id")
         .eq("photo_id", photoId)
-        .is("user_id", null)
+        .is("profile_id", null)
         .eq("ip_address", ip)
         .gte(
           "viewed_at",
@@ -71,7 +71,7 @@ export const action = async ({ request, params }: Route.ActionArgs) => {
     // 조회 기록 추가
     const { error: insertError } = await client.from("photo_views").insert({
       photo_id: photoId,
-      user_id: currentUserId,
+      profile_id: currentUserId,
       ip_address: ip,
       user_agent: userAgent,
     });

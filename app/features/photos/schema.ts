@@ -68,7 +68,7 @@ export const photoViews = pgTable(
     photo_id: uuid()
       .references(() => photos.photo_id)
       .notNull(),
-    user_id: uuid().references(() => profiles.profile_id), // null이면 비회원
+    profile_id: uuid().references(() => profiles.profile_id), // null이면 비회원
     ip_address: varchar("ip_address", { length: 45 }), // IPv6 지원
     userAgent: text("user_agent"),
     viewed_at: timestamp("viewed_at").defaultNow().notNull(),
@@ -78,7 +78,7 @@ export const photoViews = pgTable(
     index("photo_views_viewed_at_idx").on(table.viewed_at),
     // 같은 사용자가 24시간 내 중복 조회 방지를 위한 복합 인덱스
     index("photo_views_user_photo_date_idx").on(
-      table.user_id,
+      table.profile_id,
       table.photo_id,
       table.viewed_at,
     ),
@@ -86,7 +86,7 @@ export const photoViews = pgTable(
       for: "select",
       to: authenticatedRole,
       as: "permissive",
-      using: sql`${authUid} = ${table.user_id}`,
+      using: sql`${authUid} = ${table.profile_id}`,
     }),
     pgPolicy("select-photo-owner-views-policy", {
       for: "select",
@@ -102,13 +102,13 @@ export const photoViews = pgTable(
       for: "insert",
       to: authenticatedRole,
       as: "permissive",
-      withCheck: sql`${authUid} = ${table.user_id}`,
+      withCheck: sql`${authUid} = ${table.profile_id}`,
     }),
     pgPolicy("insert-anonymous-photo-views-policy", {
       for: "insert",
       to: "anon",
       as: "permissive",
-      withCheck: sql`${table.user_id} IS NULL`,
+      withCheck: sql`${table.profile_id} IS NULL`,
     }),
     pgPolicy("no-update-photo-views-policy", {
       for: "update",
@@ -121,7 +121,7 @@ export const photoViews = pgTable(
       for: "delete",
       to: authenticatedRole,
       as: "permissive",
-      using: sql`${authUid} = ${table.user_id}`,
+      using: sql`${authUid} = ${table.profile_id}`,
     }),
   ],
 );

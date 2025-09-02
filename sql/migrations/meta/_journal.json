@@ -43,6 +43,13 @@
       "when": 1756791893032,
       "tag": "0005_salty_gladiator",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1756794134848,
+      "tag": "0006_small_scarlet_witch",
+      "breakpoints": true
     }
   ]
 }

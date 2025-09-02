@@ -14,29 +14,83 @@ export type Database = {
   }
   public: {
     Tables: {
+      fittings: {
+        Row: {
+          created_at: string
+          feedback: string | null
+          id: string
+          is_public: boolean
+          photo_id: string
+          profile_id: string
+          rating: number | null
+          result_image_url: string | null
+          updated_at: string
+          user_photo_url: string
+        }
+        Insert: {
+          created_at?: string
+          feedback?: string | null
+          id?: string
+          is_public?: boolean
+          photo_id: string
+          profile_id: string
+          rating?: number | null
+          result_image_url?: string | null
+          updated_at?: string
+          user_photo_url: string
+        }
+        Update: {
+          created_at?: string
+          feedback?: string | null
+          id?: string
+          is_public?: boolean
+          photo_id?: string
+          profile_id?: string
+          rating?: number | null
+          result_image_url?: string | null
+          updated_at?: string
+          user_photo_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fittings_photo_id_photos_photo_id_fk"
+            columns: ["photo_id"]
+            isOneToOne: false
+            referencedRelation: "photos"
+            referencedColumns: ["photo_id"]
+          },
+          {
+            foreignKeyName: "fittings_profile_id_profiles_profile_id_fk"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
       photo_views: {
         Row: {
           id: string
           ip_address: string | null
           photo_id: string
+          profile_id: string | null
           user_agent: string | null
-          user_id: string | null
           viewed_at: string
         }
         Insert: {
           id?: string
           ip_address?: string | null
           photo_id: string
+          profile_id?: string | null
           user_agent?: string | null
-          user_id?: string | null
           viewed_at?: string
         }
         Update: {
           id?: string
           ip_address?: string | null
           photo_id?: string
+          profile_id?: string | null
           user_agent?: string | null
-          user_id?: string | null
           viewed_at?: string
         }
         Relationships: [
@@ -48,8 +102,8 @@ export type Database = {
             referencedColumns: ["photo_id"]
           },
           {
-            foreignKeyName: "photo_views_user_id_profiles_profile_id_fk"
-            columns: ["user_id"]
+            foreignKeyName: "photo_views_profile_id_profiles_profile_id_fk"
+            columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["profile_id"]
