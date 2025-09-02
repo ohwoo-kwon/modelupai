@@ -27,6 +27,49 @@ import { insertFitting } from "~/features/fittings/mutations";
 
 import { getPhoto } from "../queries";
 
+export const meta: Route.MetaFunction = ({ data }) => {
+  const photo = data?.photo;
+
+  if (!photo) {
+    return [
+      {
+        title: `AI 가상 피팅 | ${import.meta.env.VITE_APP_NAME} 가상 피팅`,
+      },
+      {
+        name: "description",
+        content: "사진을 업로드하고 원하는 옷을 AI로 가상 피팅해보세요.",
+      },
+    ];
+  }
+
+  return [
+    {
+      title: `${photo.title} | ${import.meta.env.VITE_APP_NAME} 가상 피팅`,
+    },
+    {
+      name: "description",
+      content:
+        "룩북과 내 사진으로 AI가 새로운 스타일을 입혀줍니다. 지금 가상 피팅을 체험해보세요!",
+    },
+    {
+      name: "keywords",
+      content: `AI 가상 피팅, 스타일링, 패션 코디, 룩북, 패션 AI, ${import.meta.env.VITE_APP_NAME}`,
+    },
+    {
+      property: "og:title",
+      content: `${photo.title} | ${import.meta.env.VITE_APP_NAME} 가상 피팅`,
+    },
+    {
+      property: "og:description",
+      content: "AI가 내 사진에 룩북 속 패션 아이템을 입혀주는 놀라운 체험!",
+    },
+    {
+      property: "og:image",
+      content: photo.image_url,
+    },
+  ];
+};
+
 const formSchema = z.object({
   lookbookUrl: z.string().min(1, "룩북이 존재하지 않습니다."),
   image: z

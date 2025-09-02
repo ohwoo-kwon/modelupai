@@ -19,7 +19,9 @@ import { getPhoto } from "../queries";
 export const meta: Route.MetaFunction = ({ data }) => {
   if (!data?.photo) {
     return [
-      { title: "사진을 찾을 수 없습니다 | MyFashion" },
+      {
+        title: `사진을 찾을 수 없습니다 | ${import.meta.env.VITE_APP_NAME} 가상 피팅`,
+      },
       {
         name: "description",
         content: "요청하신 사진을 찾을 수 없습니다.",
