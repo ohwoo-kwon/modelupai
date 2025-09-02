@@ -28,11 +28,13 @@ export default [
       route("/profile", "features/users/screens/profile.tsx"),
       route("/logout", "features/auth/screens/logout.tsx"),
     ]),
-    ...prefix("/photos", [
-      route("/upload", "features/photos/screens/upload-photo.tsx"),
-      route("/explore", "features/photos/screens/explore-photos.tsx"),
-      route("/:photo_id", "features/photos/screens/photo.tsx"),
+    layout("core/layouts/private.layout.tsx", { id: "private-photo" }, [
+      ...prefix("/photos", [
+        route("/upload", "features/photos/screens/upload-photo.tsx"),
+        route("/:photo_id", "features/photos/screens/photo.tsx"),
+      ]),
     ]),
+    route("/photos/explore", "features/photos/screens/explore-photos.tsx"),
   ]),
   ...prefix("/api", [
     ...prefix("/users", [

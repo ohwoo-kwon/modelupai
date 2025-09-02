@@ -541,17 +541,12 @@ export default function UploadPhoto({ actionData }: Route.ComponentProps) {
                   {tags.length > 0 && (
                     <div className="flex flex-wrap gap-2">
                       {tags.map((tag, index) => (
-                        <Badge key={index}>
+                        <Badge
+                          key={index}
+                          className="cursor-pointer bg-blue-400 hover:bg-blue-500"
+                          onClick={() => removeTag(tag)}
+                        >
                           {tag}
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => removeTag(tag)}
-                            className="h-auto p-0! hover:bg-transparent hover:text-slate-300"
-                          >
-                            <XIcon className="h-3 w-3" />
-                          </Button>
                         </Badge>
                       ))}
                     </div>

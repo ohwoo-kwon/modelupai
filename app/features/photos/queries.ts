@@ -20,10 +20,15 @@ export async function getPhoto(
 ) {
   const { data, error } = await client
     .from("photos")
-    .select("*, profile:profile_id()")
+    .select("*, profile:profile_id(*)")
     .eq("photo_id", photo_id)
     .single();
   if (error) throw error;
 
-  return data;
+  const tags = (data?.tags as string[]) ?? [];
+
+  return {
+    ...data,
+    tags,
+  };
 }
