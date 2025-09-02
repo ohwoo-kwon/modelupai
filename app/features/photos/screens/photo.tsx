@@ -106,7 +106,7 @@ export default function Photo({ loaderData }: Route.ComponentProps) {
     };
 
     recordView();
-  }, [photo.photo_id, fetcher]);
+  }, [photo.photo_id]);
 
   return (
     <div className="h-full px-4">
