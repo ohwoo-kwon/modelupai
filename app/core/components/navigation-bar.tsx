@@ -81,7 +81,7 @@ function MenuButtons() {
   return (
     <div className="flex h-full flex-col justify-between lg:flex-row lg:items-center lg:justify-center lg:gap-4">
       <div className="space-y-4 lg:flex lg:items-center lg:gap-4 lg:space-y-0">
-        <SheetClose asChild>
+        {/* <SheetClose asChild>
           <Link
             to="/trending"
             viewTransition
@@ -89,7 +89,7 @@ function MenuButtons() {
           >
             <TrendingUpIcon size={20} /> 인기 사진
           </Link>
-        </SheetClose>
+        </SheetClose> */}
         <SheetClose asChild>
           <Link
             to="/photos/explore"
@@ -108,7 +108,7 @@ function MenuButtons() {
             <ShirtIcon size={20} /> 피팅 룸
           </Link>
         </SheetClose>
-        <SheetClose asChild>
+        {/* <SheetClose asChild>
           <Link
             to="/like"
             viewTransition
@@ -116,7 +116,7 @@ function MenuButtons() {
           >
             <HeartIcon size={20} /> 즐겨찾기
           </Link>
-        </SheetClose>
+        </SheetClose> */}
       </div>
       <SheetClose asChild>
         <Button asChild>
