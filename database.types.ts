@@ -201,6 +201,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      increment_photo_fittings: {
+        Args: { photo_id_param: string }
+        Returns: undefined
+      }
       increment_photo_views: {
         Args: { photo_id_param: string }
         Returns: undefined

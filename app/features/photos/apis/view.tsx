@@ -1,9 +1,12 @@
 import type { Route } from "./+types/view";
 
+import { DateTime } from "luxon";
 import { data } from "react-router";
 
 import { requireMethod } from "~/core/lib/guards.server";
 import makeServerClient from "~/core/lib/supa-client.server";
+
+import { increaseViews } from "../mutations";
 
 export const action = async ({ request, params }: Route.ActionArgs) => {
   requireMethod("POST");
@@ -28,16 +31,14 @@ export const action = async ({ request, params }: Route.ActionArgs) => {
     const currentUserId = (await client.auth.getUser()).data.user?.id || null;
 
     //   중복 조회 확인 (24시간 내)
+    const now = DateTime.now().setZone("utc");
     if (currentUserId) {
       const { data: existingView } = await client
         .from("photo_views")
         .select("id")
         .eq("photo_id", photoId)
         .eq("profile_id", currentUserId)
-        .gte(
-          "viewed_at",
-          new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-        )
+        .gte("viewed_at", now.minus({ days: 1 }))
         .maybeSingle();
 
       if (existingView) {
@@ -54,10 +55,7 @@ export const action = async ({ request, params }: Route.ActionArgs) => {
         .eq("photo_id", photoId)
         .is("profile_id", null)
         .eq("ip_address", ip)
-        .gte(
-          "viewed_at",
-          new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-        )
+        .gte("viewed_at", now.minus({ days: 1 }))
         .maybeSingle();
 
       if (existingIpView) {
@@ -88,18 +86,7 @@ export const action = async ({ request, params }: Route.ActionArgs) => {
     }
 
     // photos 테이블의 views 카운트 증가
-    const { error: updateError } = await client.rpc("increment_photo_views", {
-      photo_id_param: photoId,
-    });
-
-    if (updateError) {
-      console.error("Error updating photo views count:", updateError);
-      // 조회 기록은 성공했지만 카운트 업데이트 실패
-      return data({
-        success: true,
-        warning: "View recorded but count update failed",
-      });
-    }
+    await increaseViews(client, photoId);
 
     return data({
       success: true,

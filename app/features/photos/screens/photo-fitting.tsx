@@ -25,6 +25,7 @@ import {
 } from "~/core/lib/utils";
 import { insertFitting } from "~/features/fittings/mutations";
 
+import { increaseFittings } from "../mutations";
 import { getPhoto } from "../queries";
 
 export const meta: Route.MetaFunction = ({ data }) => {
@@ -157,6 +158,8 @@ Focus on photorealism, accurate layering of clothes, and a seamless integration 
       result_image_url: resultUrl,
       is_public: true,
     });
+
+    await increaseFittings(client, photoId);
 
     return data({
       fieldErrors: undefined,

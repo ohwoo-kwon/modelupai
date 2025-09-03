@@ -177,7 +177,10 @@ export default function Photo({ loaderData }: Route.ComponentProps) {
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
             {fittings.map(({ result_image_url, fitting_id }) =>
               result_image_url ? (
-                <Link to={`/fittings/${fitting_id}`}>
+                <Link
+                  key={`fitting_link_${fitting_id}`}
+                  to={`/fittings/${fitting_id}`}
+                >
                   <img src={result_image_url} alt="AI 가상 피팅 결과 이미지" />
                 </Link>
               ) : null,
