@@ -13,6 +13,7 @@ import { Badge } from "~/core/components/ui/badge";
 import { Button } from "~/core/components/ui/button";
 import { Separator } from "~/core/components/ui/separator";
 import makeServerClient from "~/core/lib/supa-client.server";
+import { getFittingByPhotoId } from "~/features/fittings/queries";
 
 import { getPhoto } from "../queries";
 
@@ -80,12 +81,13 @@ export const loader = async ({ request, params }: Route.LoaderArgs) => {
   const [client] = makeServerClient(request);
 
   const photo = await getPhoto(client, photo_id);
+  const fittings = await getFittingByPhotoId(client, photo_id);
 
-  return { photo };
+  return { photo, fittings };
 };
 
 export default function Photo({ loaderData }: Route.ComponentProps) {
-  const { photo } = loaderData;
+  const { photo, fittings } = loaderData;
 
   const fetcher = useFetcher();
 
@@ -125,9 +127,7 @@ export default function Photo({ loaderData }: Route.ComponentProps) {
           />
         </div>
         <Button className="w-full" asChild>
-          <Link to={`/photos/${photo.photo_id}/fitting`}>
-            <span>AI 피팅</span>
-          </Link>
+          <Link to={`/photos/${photo.photo_id}/fitting`}>AI 피팅</Link>
         </Button>
         <Separator />
         <div className="space-y-2">
@@ -170,6 +170,19 @@ export default function Photo({ loaderData }: Route.ComponentProps) {
           <Button size="sm" variant="outline">
             팔로우
           </Button>
+        </div>
+        <Separator />
+        <div className="space-y-2">
+          <h5 className="text-lg font-semibold">AI 피팅 결과</h5>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
+            {fittings.map(({ result_image_url, fitting_id }) =>
+              result_image_url ? (
+                <Link to={`/fittings/${fitting_id}`}>
+                  <img src={result_image_url} alt="AI 가상 피팅 결과 이미지" />
+                </Link>
+              ) : null,
+            )}
+          </div>
         </div>
       </div>
     </div>
