@@ -2,6 +2,7 @@ import type { Route } from "./+types/fitting";
 
 import { Link } from "react-router";
 
+import ShareCard from "~/core/components/share-card";
 import { Button } from "~/core/components/ui/button";
 import makeServerClient from "~/core/lib/supa-client.server";
 
@@ -53,13 +54,19 @@ export const loader = async ({ request, params }: Route.LoaderArgs) => {
   const { fittingId } = params;
   const [client] = makeServerClient(request);
 
+  const {
+    data: { user },
+  } = await client.auth.getUser();
+
   const fitting = await getFittingById(client, fittingId);
 
-  return { fitting };
+  const isOwner = user ? fitting.profile_id === user.id : false;
+
+  return { fitting, isOwner };
 };
 
 export default function Fitting({ loaderData }: Route.ComponentProps) {
-  const { fitting } = loaderData;
+  const { fitting, isOwner } = loaderData;
   return (
     <div className="h-full px-4">
       <div className="mx-auto max-w-2xl space-y-4">
@@ -102,7 +109,12 @@ export default function Fitting({ loaderData }: Route.ComponentProps) {
             />
           </div>
         </div>
-        <Button className="w-full">공유하기</Button>
+        {isOwner && (
+          <ShareCard
+            title={`${import.meta.env.VITE_APP_NAME} 가상 피팅`}
+            url={`https://fitmeai.store/fittings/${fitting.fitting_id}`}
+          />
+        )}
       </div>
     </div>
   );
