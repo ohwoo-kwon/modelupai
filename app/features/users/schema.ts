@@ -2,6 +2,7 @@ import { sql } from "drizzle-orm";
 import {
   boolean,
   decimal,
+  integer,
   pgPolicy,
   pgTable,
   text,
@@ -26,6 +27,9 @@ export const profiles = pgTable(
     is_active: boolean().default(true),
     total_earnings: decimal({ precision: 10, scale: 2 }).default("0.00"),
     total_spent: decimal({ precision: 10, scale: 2 }).default("0.00"),
+    gem_balance: integer().default(0),
+    total_gems_earned: integer().default(0),
+    total_gems_spent: integer().default(0),
     ...timestamps,
   },
   (table) => [

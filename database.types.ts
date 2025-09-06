@@ -68,6 +68,124 @@ export type Database = {
           },
         ]
       }
+      gem_transactions: {
+        Row: {
+          amount: number
+          balance_after: number
+          balance_before: number
+          created_at: string
+          id: string
+          profile_id: string
+          related_fitting_id: string | null
+          related_payment_id: string | null
+          related_photo_id: string | null
+          type: string
+        }
+        Insert: {
+          amount: number
+          balance_after: number
+          balance_before: number
+          created_at?: string
+          id?: string
+          profile_id: string
+          related_fitting_id?: string | null
+          related_payment_id?: string | null
+          related_photo_id?: string | null
+          type: string
+        }
+        Update: {
+          amount?: number
+          balance_after?: number
+          balance_before?: number
+          created_at?: string
+          id?: string
+          profile_id?: string
+          related_fitting_id?: string | null
+          related_payment_id?: string | null
+          related_photo_id?: string | null
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gem_transactions_profile_id_profiles_profile_id_fk"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "gem_transactions_related_fitting_id_fittings_fitting_id_fk"
+            columns: ["related_fitting_id"]
+            isOneToOne: false
+            referencedRelation: "fittings"
+            referencedColumns: ["fitting_id"]
+          },
+          {
+            foreignKeyName: "gem_transactions_related_payment_id_payments_id_fk"
+            columns: ["related_payment_id"]
+            isOneToOne: false
+            referencedRelation: "payments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gem_transactions_related_photo_id_photos_photo_id_fk"
+            columns: ["related_photo_id"]
+            isOneToOne: false
+            referencedRelation: "photos"
+            referencedColumns: ["photo_id"]
+          },
+        ]
+      }
+      payments: {
+        Row: {
+          amount: number
+          completed_at: string | null
+          created_at: string
+          currency: string | null
+          gems_purchased: number
+          id: string
+          payment_method: string
+          payment_provider: string | null
+          profile_id: string
+          provider_transaction_id: string | null
+          status: string | null
+        }
+        Insert: {
+          amount: number
+          completed_at?: string | null
+          created_at?: string
+          currency?: string | null
+          gems_purchased: number
+          id?: string
+          payment_method: string
+          payment_provider?: string | null
+          profile_id: string
+          provider_transaction_id?: string | null
+          status?: string | null
+        }
+        Update: {
+          amount?: number
+          completed_at?: string | null
+          created_at?: string
+          currency?: string | null
+          gems_purchased?: number
+          id?: string
+          payment_method?: string
+          payment_provider?: string | null
+          profile_id?: string
+          provider_transaction_id?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_profile_id_profiles_profile_id_fk"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
       photo_views: {
         Row: {
           id: string
@@ -165,10 +283,13 @@ export type Database = {
           avatar_url: string | null
           created_at: string
           email: string
+          gem_balance: number | null
           is_active: boolean | null
           name: string
           profile_id: string
           total_earnings: number | null
+          total_gems_earned: number | null
+          total_gems_spent: number | null
           total_spent: number | null
           updated_at: string
         }
@@ -176,10 +297,13 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           email: string
+          gem_balance?: number | null
           is_active?: boolean | null
           name: string
           profile_id: string
           total_earnings?: number | null
+          total_gems_earned?: number | null
+          total_gems_spent?: number | null
           total_spent?: number | null
           updated_at?: string
         }
@@ -187,10 +311,13 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           email?: string
+          gem_balance?: number | null
           is_active?: boolean | null
           name?: string
           profile_id?: string
           total_earnings?: number | null
+          total_gems_earned?: number | null
+          total_gems_spent?: number | null
           total_spent?: number | null
           updated_at?: string
         }

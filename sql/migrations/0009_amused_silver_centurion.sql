@@ -1,0 +1,1 @@
+ALTER TABLE "profiles" RENAME COLUMN "gem_blance" TO "gem_balance";

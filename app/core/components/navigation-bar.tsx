@@ -1,4 +1,5 @@
 import {
+  GemIcon,
   HeartIcon,
   LogOutIcon,
   MenuIcon,
@@ -106,6 +107,15 @@ function MenuButtons() {
             className="hover:text-muted-foreground flex items-center gap-2 transition-colors"
           >
             <ShirtIcon size={20} /> 피팅 룸
+          </Link>
+        </SheetClose>
+        <SheetClose asChild>
+          <Link
+            to="/billing/pricing"
+            viewTransition
+            className="hover:text-muted-foreground flex items-center gap-2 transition-colors"
+          >
+            <GemIcon size={20} /> 요금제
           </Link>
         </SheetClose>
         {/* <SheetClose asChild>

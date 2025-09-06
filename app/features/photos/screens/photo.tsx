@@ -167,7 +167,7 @@ export default function Photo({ loaderData }: Route.ComponentProps) {
             </Avatar>
             <h5>{photo.profile.name}</h5>
           </div>
-          <Button size="sm" variant="outline">
+          <Button size="sm" variant="outline" disabled>
             팔로우
           </Button>
         </div>

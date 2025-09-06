@@ -37,12 +37,21 @@ export default [
     layout("core/layouts/private.layout.tsx", { id: "private-fitting" }, [
       ...prefix("/fittings", [index("features/fittings/screens/fittings.tsx")]),
     ]),
+    layout("core/layouts/private.layout.tsx", { id: "private-billing" }, [
+      ...prefix("/billing", [
+        route("/purchase", "features/billing/screens/purchase.tsx"),
+        route("/transactions", "features/billing/screens/transactions.tsx"),
+      ]),
+    ]),
     ...prefix("/photos", [
       route("/:photo_id", "features/photos/screens/photo.tsx"),
       route("/explore", "features/photos/screens/explore-photos.tsx"),
     ]),
     ...prefix("/fittings", [
       route("/:fittingId", "features/fittings/screens/fitting.tsx"),
+    ]),
+    ...prefix("/billing", [
+      route("/pricing", "features/billing/screens/pricing.tsx"),
     ]),
   ]),
   ...prefix("/api", [
