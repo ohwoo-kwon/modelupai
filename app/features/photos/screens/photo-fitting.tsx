@@ -150,7 +150,7 @@ Ensure:
 
 Focus on photorealism, accurate layering of clothes, and a seamless integration of all items from the lookbook.
 `,
-        image_input: [lookbookUrl, imgUrl],
+        image_input: [imgUrl, lookbookUrl],
       },
     });
     const imageUrl = await streamToBase64(output as ReadableStream);
