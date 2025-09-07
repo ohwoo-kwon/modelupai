@@ -3,7 +3,6 @@ import type { Route } from "./+types/fitting";
 import { Link } from "react-router";
 
 import ShareCard from "~/core/components/share-card";
-import { Button } from "~/core/components/ui/button";
 import makeServerClient from "~/core/lib/supa-client.server";
 
 import { getFittingById } from "../queries";

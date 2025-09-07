@@ -41,6 +41,8 @@ export default [
       ...prefix("/billing", [
         route("/purchase", "features/billing/screens/purchase.tsx"),
         route("/transactions", "features/billing/screens/transactions.tsx"),
+        route("/success", "features/billing/screens/payment-success.tsx"),
+        route("/failure", "features/billing/screens/payment-failure.tsx"),
       ]),
     ]),
     ...prefix("/photos", [

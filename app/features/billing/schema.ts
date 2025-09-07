@@ -8,11 +8,7 @@ import {
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
-import {
-  authUid,
-  authenticatedRole,
-  supabaseAuthAdminRole,
-} from "drizzle-orm/supabase";
+import { authUid, authenticatedRole } from "drizzle-orm/supabase";
 
 import { fittings } from "../fittings/schema";
 import { photos } from "../photos/schema";
