@@ -152,6 +152,7 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
       amount: addedGem,
       balance_before: profile.gem_balance || 0,
       balance_after: gem_balance,
+      related_payment_id: orderId,
     });
   } catch (error) {
     let message = "룩북 제작 중 오류가 발생했습니다.";

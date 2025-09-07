@@ -17,13 +17,17 @@ import {
 } from "~/core/components/ui/card";
 import { Input } from "~/core/components/ui/input";
 import { Label } from "~/core/components/ui/label";
+import adminClient from "~/core/lib/supa-admin-client.server";
 import makeServerClient from "~/core/lib/supa-client.server";
 import {
   streamToBase64,
   uploadBase64ToStorage,
   uploadImageFileToStorage,
 } from "~/core/lib/utils";
+import { insertTransaction } from "~/features/billing/mutations";
 import { insertFitting } from "~/features/fittings/mutations";
+import { useDia } from "~/features/users/mutations";
+import { getUserProfile } from "~/features/users/queries";
 
 import { increaseFittings } from "../mutations";
 import { getPhoto } from "../queries";
@@ -112,6 +116,12 @@ export const action = async ({ request, params }: Route.ActionArgs) => {
 
   if (!user) return redirect("/login");
 
+  // 다이아 소비
+  const profile = await getUserProfile(client, { userId: user.id });
+  if (!profile) return redirect("/login");
+  const remainGem = profile.gem_balance || 0;
+  if (remainGem < 10) return redirect("/billing/pricing");
+
   try {
     const imgUrl = await uploadImageFileToStorage(
       client,
@@ -151,7 +161,7 @@ Focus on photorealism, accurate layering of clothes, and a seamless integration 
       "result-image",
     );
 
-    await insertFitting(client, {
+    const fittingData = await insertFitting(client, {
       profile_id: user.id,
       photo_id: photoId,
       user_photo_url: imgUrl,
@@ -160,6 +170,20 @@ Focus on photorealism, accurate layering of clothes, and a seamless integration 
     });
 
     await increaseFittings(client, photoId);
+
+    // 다이아 소비
+    await useDia(client, { profile_id: user.id, gem_balance: remainGem - 10 });
+
+    // 다이아 거래 저장
+    await insertTransaction(adminClient, {
+      profile_id: user.id,
+      type: "spend",
+      amount: -10,
+      balance_before: remainGem,
+      balance_after: remainGem - 10,
+      related_fitting_id: fittingData.fitting_id,
+      related_photo_id: photoId,
+    });
 
     return data({
       fieldErrors: undefined,
@@ -293,12 +317,16 @@ export default function PhotoFitting({
               </div>
             </CardContent>
           </Card>
-          <Button className="w-full" disabled={!preview || submitting}>
+          <Button className="relative w-full" disabled={!preview || submitting}>
             {submitting ? (
               <Loader2Icon className="size-4 animate-spin" />
             ) : (
               <>
-                <GemIcon /> <span>AI 피팅</span>
+                <p className="absolute top-2 left-10 flex items-center gap-1">
+                  <GemIcon />
+                  10
+                </p>
+                <span>AI 피팅</span>
               </>
             )}
           </Button>
