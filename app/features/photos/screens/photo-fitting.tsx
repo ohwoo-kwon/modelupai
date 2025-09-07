@@ -1,8 +1,8 @@
 import type { Route } from "./+types/photo-fitting";
 
 import { GemIcon, Loader2Icon, UploadIcon } from "lucide-react";
-import { type FormEvent, useRef, useState } from "react";
-import { Form, data, redirect, useNavigation, useSubmit } from "react-router";
+import { useRef, useState } from "react";
+import { Form, data, redirect, useNavigation } from "react-router";
 import Replicate from "replicate";
 import { z } from "zod";
 
@@ -17,7 +17,6 @@ import {
 } from "~/core/components/ui/card";
 import { Input } from "~/core/components/ui/input";
 import { Label } from "~/core/components/ui/label";
-import { resizePhotoClient } from "~/core/lib/photo-resize";
 import adminClient from "~/core/lib/supa-admin-client.server";
 import makeServerClient from "~/core/lib/supa-client.server";
 import {
@@ -223,12 +222,10 @@ export default function PhotoFitting({
 }: Route.ComponentProps) {
   const { photo } = loaderData;
   const navigation = useNavigation();
-  const submit = useSubmit();
 
   const submitting = navigation.state === "submitting";
 
   const [preview, setPreview] = useState<string | null>(null);
-  const [croppedFile, setCroppedFile] = useState<File | null>(null);
 
   const imgInputRef = useRef<HTMLInputElement>(null);
 
@@ -236,26 +233,11 @@ export default function PhotoFitting({
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = (e) => {
-        resizePhotoClient(e, file, setPreview, setCroppedFile);
+      reader.onloadend = () => {
+        setPreview(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
-  };
-
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    const formData = new FormData(event.currentTarget);
-
-    if (croppedFile) {
-      formData.set("image", croppedFile);
-    }
-
-    submit(formData, {
-      method: "POST",
-      encType: "multipart/form-data",
-    });
   };
 
   return (
@@ -267,7 +249,7 @@ export default function PhotoFitting({
           </h1>
           <h3>사진을 업로드하고 원하는 옷을 AI 가상 피팅해보세요.</h3>
         </div>
-        <Form onSubmit={handleSubmit} className="space-y-2">
+        <Form method="post" encType="multipart/form-data" className="space-y-2">
           {actionData?.fieldErrors && actionData.fieldErrors.lookbookUrl && (
             <FormErrors errors={actionData.fieldErrors.lookbookUrl} />
           )}

@@ -1,7 +1,7 @@
 import type { Route } from "./+types/upload-photo";
 
 import { ImageIcon, Loader2Icon, UploadIcon, XIcon } from "lucide-react";
-import { type FormEvent, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Form, data, redirect, useFetcher, useNavigation } from "react-router";
 import { z } from "zod";
 
@@ -18,7 +18,6 @@ import {
 import { Input } from "~/core/components/ui/input";
 import { Label } from "~/core/components/ui/label";
 import { Textarea } from "~/core/components/ui/textarea";
-import { resizePhotoClient } from "~/core/lib/photo-resize";
 import makeServerClient from "~/core/lib/supa-client.server";
 import {
   uploadBase64ToStorage,
@@ -216,7 +215,6 @@ export default function UploadPhoto({ actionData }: Route.ComponentProps) {
   const fetcher = useFetcher();
 
   const [preview, setPreview] = useState<string | null>(null);
-  const [croppedFile, setCroppedFile] = useState<File | null>(null);
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
   const [resultImgUrl, setResultImgUrl] = useState("");
@@ -228,38 +226,28 @@ export default function UploadPhoto({ actionData }: Route.ComponentProps) {
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      resizePhotoClient(e, file, setPreview, setCroppedFile);
-    };
-    reader.readAsDataURL(file);
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleMakeLookBook = () => {
-    if (!croppedFile) return;
+    const files = imgInputRef.current?.files;
+
+    if (!files) return;
+
+    const file = files[0];
 
     const formData = new FormData();
-    formData.append("image", croppedFile);
+    formData.append("image", file);
 
     fetcher.submit(formData, {
       method: "POST",
       action: "/api/photos/lookbook",
-      encType: "multipart/form-data",
-    });
-  };
-
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    const formData = new FormData(event.currentTarget);
-
-    if (croppedFile) {
-      formData.set("image", croppedFile);
-    }
-
-    fetcher.submit(formData, {
-      method: "POST",
       encType: "multipart/form-data",
     });
   };
@@ -314,7 +302,11 @@ export default function UploadPhoto({ actionData }: Route.ComponentProps) {
           </CardHeader>
 
           <CardContent>
-            <Form className="space-y-6" onSubmit={handleSubmit}>
+            <Form
+              method="post"
+              encType="multipart/form-data"
+              className="space-y-6"
+            >
               {/* Image Upload Section */}
               <div className="space-y-2">
                 <Label htmlFor="image" className="text-sm font-medium">
