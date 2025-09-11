@@ -17,6 +17,7 @@ import {
 } from "~/core/components/ui/card";
 import { Input } from "~/core/components/ui/input";
 import { Label } from "~/core/components/ui/label";
+import { Switch } from "~/core/components/ui/switch";
 import adminClient from "~/core/lib/supa-admin-client.server";
 import makeServerClient from "~/core/lib/supa-client.server";
 import {
@@ -29,6 +30,7 @@ import { insertFitting } from "~/features/fittings/mutations";
 import { useDia } from "~/features/users/mutations";
 import { getUserProfile } from "~/features/users/queries";
 
+import ResultImageDrawer from "../components/result-image-drawer";
 import { increaseFittings } from "../mutations";
 import { getPhoto } from "../queries";
 
@@ -91,6 +93,7 @@ const formSchema = z.object({
         ),
       "지원되는 이미지 형식: JPEG, PNG, GIF, WebP",
     ),
+  is_public: z.coerce.boolean(),
 });
 
 export const action = async ({ request, params }: Route.ActionArgs) => {
@@ -108,7 +111,7 @@ export const action = async ({ request, params }: Route.ActionArgs) => {
     });
   }
 
-  const { image, lookbookUrl } = formDataValidation.data;
+  const { image, lookbookUrl, is_public } = formDataValidation.data;
 
   const {
     data: { user },
@@ -135,20 +138,20 @@ export const action = async ({ request, params }: Route.ActionArgs) => {
     const output = await replicate.run("google/nano-banana", {
       input: {
         prompt: `Take the input of:
-1) A clear portrait or full-body photo of a person (subject image).
-2) A lookbook image or collage of all desired fashion items (clothing, accessories, shoes, etc.).
+    1) A clear portrait or full-body photo of a person (subject image).
+    2) A lookbook image or collage of all desired fashion items (clothing, accessories, shoes, etc.).
 
-Output:
-A single, high-quality, realistic fashion photo of the same person, now wearing every item shown in the lookbook. 
-Ensure:
-- The model's face, body shape, pose, and lighting from the original portrait remain consistent.
-- Each clothing piece and accessory is faithfully recreated and fitted to the subject's proportions.
-- The final image looks like a professional fashion photoshoot, with natural shadows, correct fabric texture, and photo-realistic rendering.
-- No duplication of items or extra artifacts.
-- Style: editorial, clean, fashion magazine aesthetic.
+    Output:
+    A single, high-quality, realistic fashion photo of the same person, now wearing every item shown in the lookbook.
+    Ensure:
+    - The model's face, body shape, pose, and lighting from the original portrait remain consistent.
+    - Each clothing piece and accessory is faithfully recreated and fitted to the subject's proportions.
+    - The final image looks like a professional fashion photoshoot, with natural shadows, correct fabric texture, and photo-realistic rendering.
+    - No duplication of items or extra artifacts.
+    - Style: editorial, clean, fashion magazine aesthetic.
 
-Focus on photorealism, accurate layering of clothes, and a seamless integration of all items from the lookbook.
-`,
+    Focus on photorealism, accurate layering of clothes, and a seamless integration of all items from the lookbook.
+    `,
         image_input: [imgUrl, lookbookUrl],
       },
     });
@@ -166,7 +169,7 @@ Focus on photorealism, accurate layering of clothes, and a seamless integration 
       photo_id: photoId,
       user_photo_url: imgUrl,
       result_image_url: resultUrl,
-      is_public: true,
+      is_public,
     });
 
     await increaseFittings(client, photoId);
@@ -315,6 +318,10 @@ export default function PhotoFitting({
                   className="hidden"
                 />
               </div>
+              <div className="flex items-center space-x-2">
+                <Switch id="is_public" name="is_public" defaultChecked />
+                <Label htmlFor="is_public">결과 공개 여부</Label>
+              </div>
             </CardContent>
           </Card>
           <Button className="relative w-full" disabled={!preview || submitting}>
@@ -334,13 +341,10 @@ export default function PhotoFitting({
             <FormErrors errors={[actionData.error]} />
           )}
         </Form>
-        {/* @ts-ignore */}
-        {actionData && actionData.imageUrl ? (
-          <div>
-            {/* @ts-ignore */}
-            <img src={actionData.imageUrl} />
-          </div>
-        ) : null}
+        <ResultImageDrawer
+          imgUrl={actionData?.imageUrl}
+          submitting={submitting}
+        />
       </div>
     </div>
   );
