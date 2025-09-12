@@ -29,8 +29,6 @@ export const action = async ({ request, params }: Route.ActionArgs) => {
 
   const { rating, is_public } = data;
 
-  console.log(rating, is_public, fittingId);
-
   await updateFitting(client, { is_public, fittingId, rating });
 
   return redirect(`/fittings/${fittingId}`);
