@@ -67,5 +67,8 @@ export default [
       route("/lookbook", "features/photos/apis/generate-lookbook.tsx"),
       route("/:photoId/view", "features/photos/apis/view.tsx"),
     ]),
+    ...prefix("/fittings", [
+      route("/:fittingId", "features/fittings/apis/fitting.tsx"),
+    ]),
   ]),
 ] satisfies RouteConfig;

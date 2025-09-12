@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useFetcher } from "react-router";
 
 import { Button } from "~/core/components/ui/button";
 import {
@@ -11,14 +12,33 @@ import {
   DrawerTrigger,
 } from "~/core/components/ui/drawer";
 
+import StarRating from "./star-rating";
+
 export default function ResultImageDrawer({
+  fittingId,
   imgUrl,
   submitting,
 }: {
+  fittingId: string;
   imgUrl?: string;
   submitting: boolean;
 }) {
+  const fetcher = useFetcher();
+
   const [open, setOpen] = useState(false);
+  const [rating, setRating] = useState(0);
+
+  const handleClick = () => {
+    if (!fittingId) return;
+    const formData = new FormData();
+
+    formData.set("rating", String(rating));
+
+    fetcher.submit(formData, {
+      method: "PUT",
+      action: `/api/fittings/${fittingId}`,
+    });
+  };
 
   useEffect(() => {
     if (submitting) setOpen(true);
@@ -49,7 +69,14 @@ export default function ResultImageDrawer({
             </div>
           )}
         </div>
-        <DrawerFooter></DrawerFooter>
+        <DrawerFooter className="space-y-2">
+          <StarRating
+            onChange={(star: number) => {
+              setRating(star);
+            }}
+          />
+          <Button onClick={handleClick}>확인</Button>
+        </DrawerFooter>
       </DrawerContent>
     </Drawer>
   );

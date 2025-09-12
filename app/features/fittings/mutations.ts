@@ -33,3 +33,26 @@ export async function insertFitting(
   if (!data) throw new Error("데이터를 찾아 오는데 실패했습니다.");
   return data;
 }
+
+export async function updateFitting(
+  client: SupabaseClient<Database>,
+  {
+    fittingId,
+    is_public,
+    rating,
+  }: {
+    fittingId: string;
+    is_public?: boolean;
+    rating?: number;
+  },
+) {
+  const { error } = await client
+    .from("fittings")
+    .update({
+      is_public,
+      rating,
+    })
+    .eq("fitting_id", fittingId);
+
+  if (error) throw error;
+}

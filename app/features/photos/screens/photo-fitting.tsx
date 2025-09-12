@@ -108,6 +108,7 @@ export const action = async ({ request, params }: Route.ActionArgs) => {
       fieldErrors: formDataValidation.error.flatten().fieldErrors,
       error: undefined,
       imageUrl: undefined,
+      fittingId: undefined,
     });
   }
 
@@ -192,6 +193,7 @@ export const action = async ({ request, params }: Route.ActionArgs) => {
       fieldErrors: undefined,
       error: undefined,
       imageUrl: resultUrl,
+      fittingId: fittingData.fitting_id,
     });
   } catch (error) {
     console.error("Upload error:", error);
@@ -204,6 +206,7 @@ export const action = async ({ request, params }: Route.ActionArgs) => {
         fieldErrors: undefined,
         error: message,
         imageUrl: undefined,
+        fittingId: undefined,
       },
       { status: 500 },
     );
@@ -342,6 +345,7 @@ export default function PhotoFitting({
           )}
         </Form>
         <ResultImageDrawer
+          fittingId={actionData?.fittingId || ""}
           imgUrl={actionData?.imageUrl}
           submitting={submitting}
         />

@@ -9,7 +9,7 @@ import makeServerClient from "~/core/lib/supa-client.server";
 import { increaseViews } from "../mutations";
 
 export const action = async ({ request, params }: Route.ActionArgs) => {
-  requireMethod("POST");
+  requireMethod("POST")(request);
   const [client, headers] = makeServerClient(request);
   const { photoId } = params;
 

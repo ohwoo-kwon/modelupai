@@ -29,7 +29,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
   const [client] = makeServerClient(request);
 
   await requireAuthentication(client);
-  requireMethod("POST");
+  requireMethod("POST")(request);
 
   const formData = await request.formData();
 
