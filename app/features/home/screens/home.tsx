@@ -20,11 +20,19 @@ export default function Home() {
     <div>
       <div className="flex h-[calc(100vh-64px)] flex-col items-center justify-center gap-10 bg-gradient-to-br from-indigo-400 to-pink-400">
         <h1 className="text-3xl font-bold text-white">Fit Me AI</h1>
-        <h3 className="text-lg text-white">
-          피팅 서비스로 AI 시대 쇼핑을 경험해보세요.
-        </h3>
+        <div className="text-center">
+          <h3 className="text-lg text-white">
+            피팅 서비스로 AI 시대 쇼핑을 경험해보세요.
+          </h3>
+          <h5 className="text-white">
+            지금 가입 시{" "}
+            <span className="text-xl font-bold text-black">
+              다이아 50개 무료 지급
+            </span>
+          </h5>
+        </div>
         <Button variant="outline" className="p-6 text-base" asChild>
-          <Link to="/photos/explore">무료로 체험하기</Link>
+          <Link to="/fittings/room">무료로 체험하기</Link>
         </Button>
       </div>
       <div className="flex h-screen flex-col gap-4 px-4 py-8">
