@@ -21,9 +21,8 @@ export const fittings = pgTable(
     profile_id: uuid()
       .references(() => profiles.profile_id)
       .notNull(),
-    photo_id: uuid()
-      .references(() => photos.photo_id)
-      .notNull(),
+    photo_id: uuid().references(() => photos.photo_id),
+    cloth_photo_url: text(),
     user_photo_url: text().notNull(),
     result_image_url: text(),
     is_public: boolean().default(true).notNull(),

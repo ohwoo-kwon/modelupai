@@ -56,7 +56,7 @@ export default function ResultImageDrawer({
           <DrawerTitle>AI 피팅 결과</DrawerTitle>
           <DrawerDescription></DrawerDescription>
         </DrawerHeader>
-        <div className="mx-auto max-h-80 max-w-80">
+        <div className="mx-auto max-h-80 max-w-80 overflow-auto">
           {imgUrl ? (
             <img
               src={imgUrl}

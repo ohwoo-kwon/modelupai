@@ -16,11 +16,12 @@ export type Database = {
     Tables: {
       fittings: {
         Row: {
+          cloth_photo_url: string | null
           created_at: string
           feedback: string | null
           fitting_id: string
           is_public: boolean
-          photo_id: string
+          photo_id: string | null
           profile_id: string
           rating: number | null
           result_image_url: string | null
@@ -28,11 +29,12 @@ export type Database = {
           user_photo_url: string
         }
         Insert: {
+          cloth_photo_url?: string | null
           created_at?: string
           feedback?: string | null
           fitting_id?: string
           is_public?: boolean
-          photo_id: string
+          photo_id?: string | null
           profile_id: string
           rating?: number | null
           result_image_url?: string | null
@@ -40,11 +42,12 @@ export type Database = {
           user_photo_url: string
         }
         Update: {
+          cloth_photo_url?: string | null
           created_at?: string
           feedback?: string | null
           fitting_id?: string
           is_public?: boolean
-          photo_id?: string
+          photo_id?: string | null
           profile_id?: string
           rating?: number | null
           result_image_url?: string | null

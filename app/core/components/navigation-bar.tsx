@@ -1,12 +1,10 @@
 import {
   GemIcon,
-  HeartIcon,
   ImagesIcon,
   LogOutIcon,
   MenuIcon,
   SearchIcon,
   ShirtIcon,
-  TrendingUpIcon,
   UploadIcon,
   UserIcon,
 } from "lucide-react";

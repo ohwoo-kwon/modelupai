@@ -30,11 +30,11 @@ export const meta: Route.MetaFunction = ({ data }) => {
 
   return [
     {
-      title: `AI 피팅 결과 | ${fitting.photo.title}`,
+      title: `AI 피팅 결과 | ${fitting.photo?.title}`,
     },
     {
       name: "description",
-      content: `${fitting.photo.title} 에 대한 AI 피팅 결과를 확인해보세요.`,
+      content: `${fitting.photo?.title} 에 대한 AI 피팅 결과를 확인해보세요.`,
     },
     {
       name: "keywords",
@@ -42,11 +42,11 @@ export const meta: Route.MetaFunction = ({ data }) => {
     },
     {
       property: "og:title",
-      content: `AI 피팅 결과 | ${fitting.photo.title}`,
+      content: `AI 피팅 결과 | ${fitting.photo?.title}`,
     },
     {
       property: "og:description",
-      content: `${fitting.photo.title} 에 대한 AI 피팅 결과를 확인해보세요.`,
+      content: `${fitting.photo?.title} 에 대한 AI 피팅 결과를 확인해보세요.`,
     },
     {
       property: "og:image",
@@ -109,7 +109,7 @@ export default function Fitting({ loaderData }: Route.ComponentProps) {
             to={`/photos/${fitting.photo_id}`}
             className="text-center underline sm:text-lg"
           >
-            <h3>{fitting.photo.title}</h3>
+            <h3>{fitting.photo?.title}</h3>
           </Link>
         </div>
         {fitting.result_image_url ? (
@@ -131,28 +131,41 @@ export default function Fitting({ loaderData }: Route.ComponentProps) {
               className="rounded shadow-md"
             />
           </div>
-          <div>
-            <h3>룩북 이미지</h3>
-            <img
-              src={fitting.photo.lookbook_url}
-              alt="룩북 이미지"
-              className="rounded shadow-md"
-            />
-          </div>
+          {fitting.photo?.lookbook_url ? (
+            <div>
+              <h3>룩북 이미지</h3>
+              <img
+                src={fitting.photo.lookbook_url}
+                alt="룩북 이미지"
+                className="rounded shadow-md"
+              />
+            </div>
+          ) : (
+            <div>
+              <h3>옷 이미지</h3>
+              <img
+                src={fitting.cloth_photo_url || ""}
+                alt="옷 이미지"
+                className="rounded shadow-md"
+              />
+            </div>
+          )}
         </div>
         {isOwner && (
           <>
             <fetcher.Form onSubmit={handleSubmit}>
               <Card>
                 <CardContent className="space-y-4">
-                  <div className="flex items-center space-x-2">
-                    <Switch
-                      id="is_public"
-                      name="is_public"
-                      defaultChecked={fitting.is_public}
-                    />
-                    <Label htmlFor="is_public">결과 공개 여부</Label>
-                  </div>
+                  {!fitting.cloth_photo_url && (
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        id="is_public"
+                        name="is_public"
+                        defaultChecked={fitting.is_public}
+                      />
+                      <Label htmlFor="is_public">결과 공개 여부</Label>
+                    </div>
+                  )}
                   <StarRating
                     value={fitting.rating || 0}
                     onChange={(star: number) => {

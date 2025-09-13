@@ -6,12 +6,14 @@ export async function insertFitting(
   {
     profile_id,
     photo_id,
+    cloth_photo_url,
     user_photo_url,
     result_image_url,
     is_public,
   }: {
     profile_id: string;
-    photo_id: string;
+    photo_id?: string;
+    cloth_photo_url?: string;
     user_photo_url: string;
     result_image_url: string;
     is_public: boolean;
@@ -22,6 +24,7 @@ export async function insertFitting(
     .insert({
       profile_id,
       photo_id,
+      cloth_photo_url,
       user_photo_url,
       result_image_url,
       is_public,
