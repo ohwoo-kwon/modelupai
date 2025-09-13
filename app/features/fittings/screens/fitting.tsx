@@ -1,9 +1,15 @@
 import type { Route } from "./+types/fitting";
 
-import { Link } from "react-router";
+import { useState } from "react";
+import { Form, Link, useFetcher } from "react-router";
 
 import ShareCard from "~/core/components/share-card";
+import { Button } from "~/core/components/ui/button";
+import { Card, CardContent, CardFooter } from "~/core/components/ui/card";
+import { Label } from "~/core/components/ui/label";
+import { Switch } from "~/core/components/ui/switch";
 import makeServerClient from "~/core/lib/supa-client.server";
+import StarRating from "~/features/photos/components/star-rating";
 
 import { getFittingById } from "../queries";
 
@@ -66,6 +72,32 @@ export const loader = async ({ request, params }: Route.LoaderArgs) => {
 
 export default function Fitting({ loaderData }: Route.ComponentProps) {
   const { fitting, isOwner } = loaderData;
+  const fetcher = useFetcher();
+
+  const [rating, setRating] = useState(0);
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.currentTarget);
+
+    const payload = {
+      is_public: formData.get("is_public") === "on",
+      rating: rating,
+    };
+
+    fetcher.submit(
+      {
+        is_public: String(payload.is_public),
+        rating: payload.rating,
+      },
+      {
+        method: "PUT",
+        action: `/api/fittings/${fitting.fitting_id}`,
+      },
+    );
+  };
+
   return (
     <div className="h-full px-4">
       <div className="mx-auto max-w-2xl space-y-4">
@@ -109,10 +141,35 @@ export default function Fitting({ loaderData }: Route.ComponentProps) {
           </div>
         </div>
         {isOwner && (
-          <ShareCard
-            title={`${import.meta.env.VITE_APP_NAME} 가상 피팅`}
-            url={`https://fitmeai.store/fittings/${fitting.fitting_id}`}
-          />
+          <>
+            <fetcher.Form onSubmit={handleSubmit}>
+              <Card>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="is_public"
+                      name="is_public"
+                      defaultChecked={fitting.is_public}
+                    />
+                    <Label htmlFor="is_public">결과 공개 여부</Label>
+                  </div>
+                  <StarRating
+                    value={fitting.rating || 0}
+                    onChange={(star: number) => {
+                      setRating(star);
+                    }}
+                  />
+                </CardContent>
+                <CardFooter>
+                  <Button className="w-full">저장</Button>
+                </CardFooter>
+              </Card>
+            </fetcher.Form>
+            <ShareCard
+              title={`${import.meta.env.VITE_APP_NAME} 가상 피팅`}
+              url={`https://fitmeai.store/fittings/${fitting.fitting_id}`}
+            />
+          </>
         )}
       </div>
     </div>

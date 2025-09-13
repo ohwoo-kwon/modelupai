@@ -9,7 +9,11 @@ import makeServerClient from "~/core/lib/supa-client.server";
 import { updateFitting } from "../mutations";
 
 const formSchema = z.object({
-  is_public: z.coerce.boolean().optional(),
+  is_public: z.preprocess((val) => {
+    if (val === "true") return true;
+    if (val === "false") return false;
+    return val;
+  }, z.boolean().optional()),
   rating: z.coerce.number(),
 });
 
