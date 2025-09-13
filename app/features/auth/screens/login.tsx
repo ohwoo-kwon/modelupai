@@ -30,7 +30,7 @@ import AuthLoginButtons from "../components/auth-login-buttons";
 export const meta: Route.MetaFunction = () => {
   return [
     {
-      title: `로그인 | ${import.meta.env.VITE_APP_NAME} 가상 피팅`,
+      title: `로그인 | ${import.meta.env.VITE_APP_NAME} 피팅`,
     },
   ];
 };

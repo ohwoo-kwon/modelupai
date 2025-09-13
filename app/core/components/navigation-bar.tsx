@@ -1,6 +1,7 @@
 import {
   GemIcon,
   HeartIcon,
+  ImagesIcon,
   LogOutIcon,
   MenuIcon,
   SearchIcon,
@@ -102,11 +103,20 @@ function MenuButtons() {
         </SheetClose>
         <SheetClose asChild>
           <Link
-            to="/fittings"
+            to="/fittings/room"
             viewTransition
             className="hover:text-muted-foreground flex items-center gap-2 transition-colors"
           >
             <ShirtIcon size={20} /> 피팅 룸
+          </Link>
+        </SheetClose>
+        <SheetClose asChild>
+          <Link
+            to="/fittings"
+            viewTransition
+            className="hover:text-muted-foreground flex items-center gap-2 transition-colors"
+          >
+            <ImagesIcon size={20} /> 피팅 내역
           </Link>
         </SheetClose>
         <SheetClose asChild>

@@ -8,15 +8,15 @@ import PackageCard from "../components/package-card";
 export const meta: Route.MetaFunction = () => {
   return [
     {
-      title: `${import.meta.env.VITE_APP_NAME} 요금제 - 다이아 충전 및 AI 가상 피팅`,
+      title: `${import.meta.env.VITE_APP_NAME} 요금제 - 다이아 충전 및 AI 피팅`,
     },
     {
       name: "description",
-      content: `${import.meta.env.VITE_APP_NAME}의 다이아 요금제를 확인하고 충전하세요. AI 가상 피팅으로 다양한 패션 아이템을 입어볼 수 있습니다. 안전한 결제와 즉시 충전을 제공합니다.`,
+      content: `${import.meta.env.VITE_APP_NAME}의 다이아 요금제를 확인하고 충전하세요. AI 피팅으로 다양한 패션 아이템을 입어볼 수 있습니다. 안전한 결제와 즉시 충전을 제공합니다.`,
     },
     {
       name: "keywords",
-      content: `AI 피팅, 패션 AI, 가상 피팅, 요금제, 다이아 충전, ${import.meta.env.VITE_APP_NAME}, 온라인 패션, 패션 테크`,
+      content: `AI 피팅, 패션 AI, 피팅, 요금제, 다이아 충전, ${import.meta.env.VITE_APP_NAME}, 온라인 패션, 패션 테크`,
     },
     {
       property: "og:title",
@@ -25,7 +25,7 @@ export const meta: Route.MetaFunction = () => {
     {
       property: "og:description",
       content:
-        "AI 가상 피팅 서비스를 위한 다이아 요금제를 확인하고 원하는 만큼 충전하세요.",
+        "AI 피팅 서비스를 위한 다이아 요금제를 확인하고 원하는 만큼 충전하세요.",
     },
     {
       property: "og:image",
@@ -44,7 +44,7 @@ export default function Pricing({}: Route.ComponentProps) {
           <h1 className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-2xl font-bold text-transparent">
             Fit Me AI 요금제
           </h1>
-          <h3>AI 가상 피팅으로 마음에 드는 옷을 마음껏 입어보세요.</h3>
+          <h3>AI 피팅으로 마음에 드는 옷을 마음껏 입어보세요.</h3>
         </div>
         <div className="space-y-10">
           <PackageCard count={10} price={330} type="normal" />

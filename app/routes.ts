@@ -35,7 +35,10 @@ export default [
       ]),
     ]),
     layout("core/layouts/private.layout.tsx", { id: "private-fitting" }, [
-      ...prefix("/fittings", [index("features/fittings/screens/fittings.tsx")]),
+      ...prefix("/fittings", [
+        index("features/fittings/screens/fittings.tsx"),
+        route("/room", "features/fittings/screens/fitting-room.tsx"),
+      ]),
     ]),
     layout("core/layouts/private.layout.tsx", { id: "private-billing" }, [
       ...prefix("/billing", [

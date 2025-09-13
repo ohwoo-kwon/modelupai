@@ -28,29 +28,29 @@ import { createPhoto } from "../mutations";
 
 export const meta: Route.MetaFunction = () => {
   return [
-    { title: `패션 업로드 | ${import.meta.env.VITE_APP_NAME} 가상 피팅` },
+    { title: `패션 업로드 | ${import.meta.env.VITE_APP_NAME} 피팅` },
     {
       name: "description",
       content:
-        "당신의 패션 아이템을 업로드하고 AI 가상 피팅을 통해 다른 사용자들과 공유하세요. 당신의 패션으로 가상 피팅이 이루어질 때마다 수익을 얻을 수 있습니다.",
+        "당신의 패션 아이템을 업로드하고 AI 피팅을 통해 다른 사용자들과 공유하세요. 당신의 패션으로 피팅이 이루어질 때마다 수익을 얻을 수 있습니다.",
     },
 
     // Open Graph tags
     {
       property: "og:title",
-      content: `AI 가상 피팅으로 패션 아이템 공유하고 수익 창출하기 | ${import.meta.env.VITE_APP_NAME} 가상 피팅`,
+      content: `AI 피팅으로 패션 아이템 공유하고 수익 창출하기 | ${import.meta.env.VITE_APP_NAME} 피팅`,
     },
     {
       property: "og:description",
       content:
-        "당신의 패션을 업로드하고 AI 가상 피팅 기술로 다른 사용자들이 입어볼 수 있게 하세요. 당신의 패션을 피팅할 때마다 수익이 발생합니다!",
+        "당신의 패션을 업로드하고 AI 피팅 기술로 다른 사용자들이 입어볼 수 있게 하세요. 당신의 패션을 피팅할 때마다 수익이 발생합니다!",
     },
     { property: "og:type", content: "website" },
     { property: "og:url", content: "https://fitmeai.store/upload-photo" },
     { property: "og:image", content: "" },
     {
       property: "og:image:alt",
-      content: `${import.meta.env.VITE_APP_NAME} 가상 피팅 패션 업로드 페이지`,
+      content: `${import.meta.env.VITE_APP_NAME} 피팅 패션 업로드 페이지`,
     },
     { property: "og:locale", content: "ko_KR" },
     { property: "og:site_name", content: import.meta.env.VITE_APP_NAME },
@@ -58,23 +58,23 @@ export const meta: Route.MetaFunction = () => {
     { name: "twitter:card", content: "summary_large_image" },
     {
       name: "twitter:title",
-      content: `AI 가상 피팅으로 패션 아이템 공유하고 수익 창출하기 | ${import.meta.env.VITE_APP_NAME} 가상 피팅`,
+      content: `AI 피팅으로 패션 아이템 공유하고 수익 창출하기 | ${import.meta.env.VITE_APP_NAME} 피팅`,
     },
     {
       name: "twitter:description",
       content:
-        "당신의 패션을 업로드하고 AI 가상 피팅 기술로 다른 사용자들이 입어볼 수 있게 하세요. 당신의 패션을 피팅할 때마다 수익이 발생합니다!",
+        "당신의 패션을 업로드하고 AI 피팅 기술로 다른 사용자들이 입어볼 수 있게 하세요. 당신의 패션을 피팅할 때마다 수익이 발생합니다!",
     },
     { name: "twitter:image", content: "" },
     {
       name: "twitter:image:alt",
-      content: `${import.meta.env.VITE_APP_NAME} 가상 피팅 패션 업로드 페이지`,
+      content: `${import.meta.env.VITE_APP_NAME} 피팅 패션 업로드 페이지`,
     },
 
     {
       name: "keywords",
       content:
-        "AI 가상 피팅, 패션 아이템 업로드, 가상 착용, 패션 수익, AI 패션, 버추얼 피팅, 옷 입어보기, 패션 공유, 디지털 패션, AI 착용",
+        "AI 피팅, 패션 아이템 업로드, 착용, 패션 수익, AI 패션, 버추얼 피팅, 옷 입어보기, 패션 공유, 디지털 패션, AI 착용",
     },
     { name: "author", content: import.meta.env.VITE_APP_NAME },
     { name: "robots", content: "noindex, nofollow" },
@@ -285,8 +285,7 @@ export default function UploadPhoto({ actionData }: Route.ComponentProps) {
             패션 업로드
           </h1>
           <h3>
-            당신의 패션을 업로드하고 AI 가상 피팅을 통해 다른 사용자들과
-            공유하세요.
+            당신의 패션을 업로드하고 AI 피팅을 통해 다른 사용자들과 공유하세요.
           </h3>
         </div>
 

@@ -10,25 +10,24 @@ import { getFittingsByProfileId } from "../queries";
 export const meta: Route.MetaFunction = () => {
   return [
     {
-      title: `AI 가상 피팅 내역 | ${import.meta.env.VITE_APP_NAME} 가상 피팅`,
+      title: `AI 피팅 내역 | ${import.meta.env.VITE_APP_NAME} 피팅`,
     },
     {
       name: "description",
       content:
-        "내가 시도한 모든 AI 가상 피팅 내역을 한눈에 확인하세요. 이전에 착용한 룩과 코디를 다시 보고 스타일을 참고할 수 있습니다.",
+        "내가 시도한 모든 AI 피팅 내역을 한눈에 확인하세요. 이전에 착용한 룩과 코디를 다시 보고 스타일을 참고할 수 있습니다.",
     },
     {
       name: "keywords",
-      content: `AI 패션, AI 가상 피팅, 스타일링, 코디, ${import.meta.env.VITE_APP_NAME}`,
+      content: `AI 패션, AI 피팅, 스타일링, 코디, ${import.meta.env.VITE_APP_NAME}`,
     },
     {
       property: "og:title",
-      content: `AI 가상 피팅 내역 | ${import.meta.env.VITE_APP_NAME} 가상 피팅`,
+      content: `AI 피팅 내역 | ${import.meta.env.VITE_APP_NAME} 피팅`,
     },
     {
       property: "og:description",
-      content:
-        "내가 시도한 모든 AI 가상 피팅 결과를 모아보세요. 스타일 참고에 딱!",
+      content: "내가 시도한 모든 AI 피팅 결과를 모아보세요. 스타일 참고에 딱!",
     },
     {
       property: "og:image",
@@ -56,7 +55,7 @@ export default function Fittings({ loaderData }: Route.ComponentProps) {
       <div className="w-full p-4">
         {/* <div className="flex items-center justify-center gap-4"> */}
         <h1 className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-center text-2xl font-bold text-transparent">
-          AI 가상 피팅 내역
+          AI 피팅 내역
         </h1>
         {/* </div> */}
       </div>

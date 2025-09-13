@@ -27,7 +27,7 @@ export default function PrivacyPolicySheet() {
           <div className="space-y-4 px-10">
             <h3 className="text-lg font-bold">2. 개인정보 수집 목적</h3>
             <ul className="list-disc pl-5">
-              <li>가상 피팅 이미지 생성</li>
+              <li>피팅 이미지 생성</li>
               <li>회원 식별 및 인증</li>
               <li>서비스 개선 및 개인 맞춤 추천</li>
               <li>고객 문의 응대 및 공지사항 전달</li>

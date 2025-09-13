@@ -21,7 +21,7 @@ export const meta: Route.MetaFunction = ({ data }) => {
   if (!data?.photo) {
     return [
       {
-        title: `사진을 찾을 수 없습니다 | ${import.meta.env.VITE_APP_NAME} 가상 피팅`,
+        title: `사진을 찾을 수 없습니다 | ${import.meta.env.VITE_APP_NAME} 피팅`,
       },
       {
         name: "description",
@@ -34,7 +34,7 @@ export const meta: Route.MetaFunction = ({ data }) => {
 
   return [
     {
-      title: `${photo.title} | ${import.meta.env.VITE_APP_NAME} 가상 피팅`,
+      title: `${photo.title} | ${import.meta.env.VITE_APP_NAME} 피팅`,
     },
     {
       name: "description",
@@ -45,11 +45,11 @@ export const meta: Route.MetaFunction = ({ data }) => {
     {
       name: "keywords",
       content:
-        photo.tags?.join(", ") || "패션, 코디, AI 피팅, AI 가상 피팅, FitMeAI",
+        photo.tags?.join(", ") || "패션, 코디, AI 피팅, AI 피팅, FitMeAI",
     },
     {
       property: "og:title",
-      content: `${photo.title} | ${import.meta.env.VITE_APP_NAME} 가상 피팅`,
+      content: `${photo.title} | ${import.meta.env.VITE_APP_NAME} 피팅`,
     },
     {
       property: "og:description",
@@ -64,7 +64,7 @@ export const meta: Route.MetaFunction = ({ data }) => {
     { name: "twitter:card", content: "summary_large_image" },
     {
       name: "twitter:title",
-      content: `${photo.title} | ${import.meta.env.VITE_APP_NAME} 가상 피팅`,
+      content: `${photo.title} | ${import.meta.env.VITE_APP_NAME} 피팅`,
     },
     {
       name: "twitter:description",
@@ -181,7 +181,7 @@ export default function Photo({ loaderData }: Route.ComponentProps) {
                   key={`fitting_link_${fitting_id}`}
                   to={`/fittings/${fitting_id}`}
                 >
-                  <img src={result_image_url} alt="AI 가상 피팅 결과 이미지" />
+                  <img src={result_image_url} alt="AI 피팅 결과 이미지" />
                 </Link>
               ) : null,
             )}

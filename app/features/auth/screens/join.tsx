@@ -33,7 +33,7 @@ import { doesUserExist } from "../queries";
 export const meta: Route.MetaFunction = () => {
   return [
     {
-      title: `회원가입 | ${import.meta.env.VITE_APP_NAME} 가상 피팅`,
+      title: `회원가입 | ${import.meta.env.VITE_APP_NAME} 피팅`,
     },
   ];
 };

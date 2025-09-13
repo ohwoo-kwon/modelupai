@@ -7,10 +7,10 @@ import { Card, CardHeader } from "~/core/components/ui/card";
 
 export const meta: Route.MetaFunction = () => {
   return [
-    { title: `AI 가상 피팅 | ${import.meta.env.VITE_APP_NAME} 가상 피팅` },
+    { title: `AI 피팅 | ${import.meta.env.VITE_APP_NAME} 피팅` },
     {
       name: "description",
-      content: "AI 가상 피팅 서비스를 즐길 수 있는 Fit Me Ai 입니다.",
+      content: "AI 피팅 서비스를 즐길 수 있는 Fit Me Ai 입니다.",
     },
   ];
 };
@@ -29,7 +29,7 @@ export default function Home() {
       </div>
       <div className="flex h-screen flex-col gap-4 px-4 py-8">
         <h1 className="bg-gradient-to-r from-indigo-500 to-pink-500 bg-clip-text text-center text-3xl font-bold text-transparent">
-          AI 가상 피팅
+          AI 피팅
         </h1>
         <Card className="mx-auto flex h-full max-w-[400px] flex-col items-center justify-center gap-2 px-4">
           <div className="grid grid-cols-2 gap-2">
@@ -58,7 +58,7 @@ export default function Home() {
             <img
               className="mx-auto aspect-square w-full max-w-[300px] rounded border"
               src="https://qajkaixegiieljkctzwy.supabase.co/storage/v1/object/public/result-image/40280d25-8dda-448b-89d3-c91c1217a411/1756812596332-m9ahl42qags.jpeg"
-              alt="AI 가상 피팅 사진"
+              alt="AI 피팅 사진"
             />
             <span className="absolute bottom-2 left-1/2 -translate-x-1/2 rounded-full bg-black/50 px-2 py-1 text-sm text-white">
               ✨ 피팅 결과 ✨

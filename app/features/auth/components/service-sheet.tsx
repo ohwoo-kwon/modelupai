@@ -23,7 +23,7 @@ export default function ServiceSheet() {
             <h3 className="text-lg font-bold">제1조 (목적)</h3>
             <ul className="list-decimal pl-5">
               <li>
-                본 약관은 회사가 제공하는 AI 가상 피팅 서비스의 이용과 관련하여
+                본 약관은 회사가 제공하는 AI 피팅 서비스의 이용과 관련하여
                 회사와 회원 간의 권리, 의무 및 책임사항, 이용조건 및 절차 등을
                 규정합니다.
               </li>

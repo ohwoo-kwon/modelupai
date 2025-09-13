@@ -7,7 +7,7 @@ import { Button } from "~/core/components/ui/button";
 export const meta: Route.MetaFunction = () => {
   return [
     {
-      title: `서비스 에러 | ${import.meta.env.VITE_APP_NAME} 가상 피팅`,
+      title: `서비스 에러 | ${import.meta.env.VITE_APP_NAME} 피팅`,
     },
   ];
 };

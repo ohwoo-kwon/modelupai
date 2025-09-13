@@ -12,13 +12,13 @@ import { getPhotos } from "../queries";
 
 export const meta: Route.MetaFunction = ({ data }) => {
   const searchQuery = data?.initSearchQuery || "";
-  const baseTitle = `패션 탐색 | ${import.meta.env.VITE_APP_NAME} 가상 피팅`;
+  const baseTitle = `패션 탐색 | ${import.meta.env.VITE_APP_NAME} 피팅`;
   const title = searchQuery
-    ? `"${searchQuery}" 관련 패션 이미지 검색 | ${import.meta.env.VITE_APP_NAME} 가상 피팅`
+    ? `"${searchQuery}" 관련 패션 이미지 검색 | ${import.meta.env.VITE_APP_NAME} 피팅`
     : baseTitle;
   const description = searchQuery
-    ? `"${searchQuery}"와 관련된 최신 패션 사진을 둘러보세요. AI 가상 피팅으로 직접 입어볼 수도 있습니다.`
-    : "최신 패션 트렌드를 한눈에! 마음에 드는 스타일을 탐색하고, AI 가상 피팅으로 직접 입어보세요.";
+    ? `"${searchQuery}"와 관련된 최신 패션 사진을 둘러보세요. AI 피팅으로 직접 입어볼 수도 있습니다.`
+    : "최신 패션 트렌드를 한눈에! 마음에 드는 스타일을 탐색하고, AI 피팅으로 직접 입어보세요.";
 
   const image = "";
 
@@ -29,8 +29,7 @@ export const meta: Route.MetaFunction = ({ data }) => {
     // SEO keywords
     {
       name: "keywords",
-      content:
-        "패션, 패션 탐색, 옷 추천, 스타일, AI 가상 피팅, 가상 피팅, 코디, 트렌드",
+      content: "패션, 패션 탐색, 옷 추천, 스타일, AI 피팅, 피팅, 코디, 트렌드",
     },
 
     // Open Graph

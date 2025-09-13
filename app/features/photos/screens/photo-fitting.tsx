@@ -40,31 +40,31 @@ export const meta: Route.MetaFunction = ({ data }) => {
   if (!photo) {
     return [
       {
-        title: `AI 가상 피팅 | ${import.meta.env.VITE_APP_NAME} 가상 피팅`,
+        title: `AI 피팅 | ${import.meta.env.VITE_APP_NAME} 피팅`,
       },
       {
         name: "description",
-        content: "사진을 업로드하고 원하는 옷을 AI로 가상 피팅해보세요.",
+        content: "사진을 업로드하고 원하는 옷을 AI로 피팅해보세요.",
       },
     ];
   }
 
   return [
     {
-      title: `${photo.title} | ${import.meta.env.VITE_APP_NAME} 가상 피팅`,
+      title: `${photo.title} | ${import.meta.env.VITE_APP_NAME} 피팅`,
     },
     {
       name: "description",
       content:
-        "룩북과 내 사진으로 AI가 새로운 스타일을 입혀줍니다. 지금 가상 피팅을 체험해보세요!",
+        "룩북과 내 사진으로 AI가 새로운 스타일을 입혀줍니다. 지금 피팅을 체험해보세요!",
     },
     {
       name: "keywords",
-      content: `AI 가상 피팅, 스타일링, 패션 코디, 룩북, 패션 AI, ${import.meta.env.VITE_APP_NAME}`,
+      content: `AI 피팅, 스타일링, 패션 코디, 룩북, 패션 AI, ${import.meta.env.VITE_APP_NAME}`,
     },
     {
       property: "og:title",
-      content: `${photo.title} | ${import.meta.env.VITE_APP_NAME} 가상 피팅`,
+      content: `${photo.title} | ${import.meta.env.VITE_APP_NAME} 피팅`,
     },
     {
       property: "og:description",
@@ -251,9 +251,9 @@ export default function PhotoFitting({
       <div className="mx-auto max-w-2xl space-y-4">
         <div className="flex flex-col items-center justify-center gap-2">
           <h1 className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-2xl font-bold text-transparent">
-            AI 가상 피팅
+            AI 피팅
           </h1>
-          <h3>사진을 업로드하고 원하는 옷을 AI 가상 피팅해보세요.</h3>
+          <h3>사진을 업로드하고 원하는 옷을 AI 피팅해보세요.</h3>
         </div>
         <Form method="post" encType="multipart/form-data" className="space-y-2">
           {actionData?.fieldErrors && actionData.fieldErrors.lookbookUrl && (

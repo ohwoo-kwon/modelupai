@@ -19,34 +19,34 @@ export const meta: Route.MetaFunction = ({ data }) => {
   if (!fitting) {
     return [
       {
-        title: `AI 가상 피팅 결과| ${import.meta.env.VITE_APP_NAME} 가상 피팅`,
+        title: `AI 피팅 결과| ${import.meta.env.VITE_APP_NAME} 피팅`,
       },
       {
         name: "description",
-        content: "AI로 가상 피팅한 결과를 확인해보세요.",
+        content: "AI로 피팅한 결과를 확인해보세요.",
       },
     ];
   }
 
   return [
     {
-      title: `AI 가상 피팅 결과 | ${fitting.photo.title}`,
+      title: `AI 피팅 결과 | ${fitting.photo.title}`,
     },
     {
       name: "description",
-      content: `${fitting.photo.title} 에 대한 AI 가상 피팅 결과를 확인해보세요.`,
+      content: `${fitting.photo.title} 에 대한 AI 피팅 결과를 확인해보세요.`,
     },
     {
       name: "keywords",
-      content: `AI 가상 피팅, 스타일링, 패션 코디, 룩북, 패션 AI, ${import.meta.env.VITE_APP_NAME}`,
+      content: `AI 피팅, 스타일링, 패션 코디, 룩북, 패션 AI, ${import.meta.env.VITE_APP_NAME}`,
     },
     {
       property: "og:title",
-      content: `AI 가상 피팅 결과 | ${fitting.photo.title}`,
+      content: `AI 피팅 결과 | ${fitting.photo.title}`,
     },
     {
       property: "og:description",
-      content: `${fitting.photo.title} 에 대한 AI 가상 피팅 결과를 확인해보세요.`,
+      content: `${fitting.photo.title} 에 대한 AI 피팅 결과를 확인해보세요.`,
     },
     {
       property: "og:image",
@@ -103,7 +103,7 @@ export default function Fitting({ loaderData }: Route.ComponentProps) {
       <div className="mx-auto max-w-2xl space-y-4">
         <div className="flex flex-col items-center justify-center gap-2">
           <h1 className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-2xl font-bold text-transparent">
-            AI 가상 피팅 결과
+            AI 피팅 결과
           </h1>
           <Link
             to={`/photos/${fitting.photo_id}`}
@@ -117,7 +117,7 @@ export default function Fitting({ loaderData }: Route.ComponentProps) {
             <h3>결과 이미지</h3>
             <img
               src={fitting.result_image_url}
-              alt="AI 가상 피팅 결과 이미지"
+              alt="AI 피팅 결과 이미지"
               className="rounded shadow-md"
             />
           </div>
@@ -166,7 +166,7 @@ export default function Fitting({ loaderData }: Route.ComponentProps) {
               </Card>
             </fetcher.Form>
             <ShareCard
-              title={`${import.meta.env.VITE_APP_NAME} 가상 피팅`}
+              title={`${import.meta.env.VITE_APP_NAME} 피팅`}
               url={`https://fitmeai.store/fittings/${fitting.fitting_id}`}
             />
           </>
