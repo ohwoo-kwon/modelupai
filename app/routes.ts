@@ -58,6 +58,9 @@ export default [
     ...prefix("/billing", [
       route("/pricing", "features/billing/screens/pricing.tsx"),
     ]),
+    ...prefix("/legal", [
+      route("/policy", "features/legal/screens/policy.tsx"),
+    ]),
   ]),
   ...prefix("/api", [
     ...prefix("/users", [

@@ -1,3 +1,5 @@
+import { Link } from "react-router";
+
 import PrivacyPolicySheet from "~/features/auth/components/privacy-policy-sheet";
 import ServiceSheet from "~/features/auth/components/service-sheet";
 
@@ -10,10 +12,9 @@ export default function Footer() {
           rights reserved.
         </p>
       </div>
-      {/* <div className="order-1 flex gap-5 *:underline md:order-none">
-        <PrivacyPolicySheet />
-        <ServiceSheet />
-      </div> */}
+      <div className="order-1 *:underline md:order-none">
+        <Link to="/legal/policy">서비스 이용약관 및 개인정보처리방침</Link>
+      </div>
     </footer>
   );
 }
