@@ -69,7 +69,7 @@ export default function Pricing({}: Route.ComponentProps) {
             />
             <GuideCard
               title="환불이 가능한가요?"
-              content="구매 후 7일 이내, 사용하지 않은 다이아에 대해서 환불 요청이 가능합니다."
+              content="환불은 불가합니다. 신중하게 요금제를 선택해주세요."
             />
           </div>
         </div>
